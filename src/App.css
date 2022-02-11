@@ -1,0 +1,33 @@
+@import "~antd/dist/antd.css";
+
+.bg-white {
+  background-color: #fff;
+}
+
+.bg-red {
+  background-color: red;
+}
+
+.bg-grey {
+  background-color: #f0f2f5;
+}
+
+.margin-25 {
+  margin: 25px;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.dflex {
+  display: flex;
+}
+.align-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
