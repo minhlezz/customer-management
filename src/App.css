@@ -31,3 +31,12 @@
 .justify-center {
   justify-content: center;
 }
+
+.justify-end {
+  justify-content: end;
+}
+
+#form-customer-detail .ant-btn {
+  margin-right: 8px;
+}
+
