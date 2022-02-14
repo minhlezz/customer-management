@@ -19,13 +19,20 @@ const buttonLayout = {
 
 const InformationForm = (props) => {
   const { isEditHandler } = props;
+  const [form] = Form.useForm();
 
   const onCancel = () => {
     isEditHandler(false);
   };
 
+  const onFinish = (values) => {
+    props.updateCustomerHandler(values);
+  };
+
   return (
     <Form
+      form={form}
+      onFinish={onFinish}
       name="form-customer-detail"
       {...formLayout}
       className="bg-white"

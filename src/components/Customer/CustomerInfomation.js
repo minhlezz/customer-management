@@ -1,0 +1,89 @@
+import React, { Fragment, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { Button } from "antd";
+import { SettingOutlined } from "@ant-design/icons";
+
+import InfomationDetail from "./Information/InfomationDetail";
+import InformationForm from "./Information/InformationForm";
+import * as customerService from "../../firebase/firebase.service";
+
+const CustomerInfomation = ({ id }) => {
+  const history = useHistory();
+  const [edit, setEdit] = useState(false);
+  const [customer, setCustomer] = useState({});
+
+  const isEditHandler = (value) => {
+    setEdit(value);
+  };
+
+  const onEdit = () => {
+    isEditHandler(true);
+  };
+
+  useEffect(() => {
+    let isSubcribed = true;
+
+    customerService
+      .findById("customers", id)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const value = snapshot.val();
+          if (isSubcribed) {
+            setCustomer(value);
+          }
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    return () => (isSubcribed = false);
+  }, [id]);
+
+  const updateCustomerHandler = (values) => {
+    const newCustomer = {
+      ...values,
+      phoneNumber: +values.phoneNumber,
+    };
+    const options = {
+      id,
+      service: "customers",
+      value: newCustomer,
+    };
+    customerService
+      .updateById(options)
+      .then(() => {
+        console.log("success");
+      })
+      .catch((err) => console.error(err));
+
+    setEdit(false);
+    history.push("/customer");
+  };
+
+  return (
+    <Fragment>
+      <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
+        {!edit && (
+          <Button
+            icon={<SettingOutlined />}
+            shape="circle"
+            type="primary"
+            onClick={onEdit}
+          />
+        )}
+      </div>
+      {!edit && <InfomationDetail customer={customer} />}
+      {edit && (
+        <InformationForm
+          updateCustomerHandler={updateCustomerHandler}
+          isEditHandler={isEditHandler}
+        />
+      )}
+    </Fragment>
+  );
+};
+
+export default CustomerInfomation;

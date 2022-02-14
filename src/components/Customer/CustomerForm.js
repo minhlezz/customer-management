@@ -1,5 +1,5 @@
-import { Button, Col, Form, Input, Row, Typography } from "antd";
 import React from "react";
+import { Button, Col, Form, Input, Row, Typography } from "antd";
 
 const { Title } = Typography;
 
@@ -9,9 +9,27 @@ const formLayout = {
   labelAlign: "left",
 };
 
-const CustomerForm = () => {
+const CustomerForm = (props) => {
+  const [form] = Form.useForm();
+
+  const onFinish = (values) => {
+    props.addNewCustomerHandler(values);
+    form.resetFields();
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
+
   return (
-    <Form {...formLayout} labelWrap className="margin-25">
+    <Form
+      form={form}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      labelWrap
+      {...formLayout}
+      className="margin-25"
+    >
       <Title level={4} type="secondary">
         Add New User
       </Title>
@@ -31,7 +49,7 @@ const CustomerForm = () => {
           <Form.Item name="email" label="Email">
             <Input placeholder="Enter your email...." />
           </Form.Item>
-          <Form.Item name="phone" label="Phone Number">
+          <Form.Item name="phoneNumber" label="Phone Number">
             <Input placeholder="Enter your phone number...." />
           </Form.Item>
         </Col>

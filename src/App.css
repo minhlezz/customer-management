@@ -12,6 +12,10 @@
   background-color: #f0f2f5;
 }
 
+.margin-bottom-8 {
+  margin-bottom: 8px;
+}
+
 .margin-25 {
   margin: 25px;
 }
@@ -39,4 +43,3 @@
 #form-customer-detail .ant-btn {
   margin-right: 8px;
 }
-

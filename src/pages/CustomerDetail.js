@@ -1,39 +1,41 @@
-import React, { useState } from "react";
-import { Button, PageHeader } from "antd";
+import React from "react";
+import { Button, PageHeader, Tabs } from "antd";
 import { useHistory, useParams } from "react-router-dom";
-import InfomationDetail from "../components/InfomationDetail";
-import InformationForm from "../components/InformationForm";
-import { SettingOutlined } from "@ant-design/icons";
+import CustomerInfomation from "../components/Customer/CustomerInfomation";
+import CustomerOrder from "../components/Customer/CustomerOrder";
+
+const { TabPane } = Tabs;
 
 const CustomerDetail = () => {
-  const [edit, setEdit] = useState(false);
   const history = useHistory();
   const params = useParams();
-
-  const isEditHandler = (value) => {
-    setEdit(value);
-  };
-  
-  const onEdit = () => {
-    isEditHandler(true)
-  }
+  const id = params.customerId;
 
   const backToPreviousPage = () => {
     history.push("/customer");
   };
 
+  const jumpHandler = () => {
+    history.push("/order");
+  };
+
   return (
     <PageHeader title="Back To Customer" onBack={backToPreviousPage}>
-      <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
-        <Button
-          icon={<SettingOutlined />}
-          shape="circle"
-          type="primary"
-          onClick={onEdit}
-        />
-      </div>
-      {!edit && <InfomationDetail />}
-      {edit && <InformationForm isEditHandler={isEditHandler} />}
+      <Tabs defaultActiveKey="1">
+        <TabPane tab="Customer Detail" key="1">
+          <CustomerInfomation id={id} />
+        </TabPane>
+        <TabPane tab="Order" key="2">
+          <Button
+            type="primary"
+            onClick={jumpHandler}
+            className="margin-bottom-8 "
+          >
+            New Order
+          </Button>
+          <CustomerOrder />
+        </TabPane>
+      </Tabs>
     </PageHeader>
   );
 };
