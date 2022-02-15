@@ -21,18 +21,23 @@ const findById = (service, id) => {
 };
 
 const create = (nameService, values) => {
-  const generateKey = push(child(ref(db), `${nameService}`)).key;
-  return push(ref(db, nameService), {
+  const newValues = {
     ...values,
-    id: generateKey,
     createdAt: serverTimestamp(),
+  };
+  return push(ref(db, nameService), {
+    ...newValues,
   });
 };
 
 const updateById = (options) => {
   const { id, service, value } = options;
+  const newValues = {
+    ...value,
+    updatedAt: serverTimestamp(),
+  };
   const updates = {};
-  updates[`/${service}/${id}`] = value;
+  updates[`/${service}/${id}`] = newValues;
   return update(dbRef, updates);
 };
 

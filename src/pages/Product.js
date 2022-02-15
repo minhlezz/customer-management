@@ -29,6 +29,7 @@ const Product = () => {
           setIsLoading(false);
         } else {
           console.log("No data available");
+          setIsLoading(false);
         }
       })
       .catch((error) => {
@@ -57,6 +58,7 @@ const Product = () => {
       })
       .catch((err) => {
         console.log(err);
+      
       });
   };
 

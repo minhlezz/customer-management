@@ -43,7 +43,6 @@ const Order = () => {
     );
 
     const existingProduct = allProducts[existingProductIndex];
-    console.log(existingProductIndex);
     if (existingProduct) {
       const updatedProduct = {
         ...existingProduct,
@@ -71,17 +70,18 @@ const Order = () => {
     const newOrder = {
       ...orders,
     };
-
     orderService
       .create("orders", newOrder)
+      .then(() => {
+        console.log("success");
+      })
       .catch((err) => {
         console.log(err);
       });
-      setOrders(initOrder);
-      history.push("/");
-  };
 
-  console.log(orders);
+    setOrders(initOrder);
+    history.push("/");
+  };
 
   return (
     <div>

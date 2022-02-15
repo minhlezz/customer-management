@@ -2,18 +2,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { Table } from "antd";
 
-const dataSource = [
-  {
-    key: "1",
-    id: "12asg123123",
-    total: 42,
-  },
-  {
-    key: "2",
-    id: "213asddsasa",
-    total: 42,
-  },
-];
+
 
 const columns = [
   {
@@ -22,13 +11,14 @@ const columns = [
     key: "id",
   },
   {
-    title: "Total",
-    dataIndex: "total",
-    key: "total",
+    title: "Total Price",
+    dataIndex: "totalPrice",
+    key: "totalPrice",
   },
 ];
 
-const CustomerOrder = () => {
+const CustomerOrder = (props) => {
+  const { customer } = props;
   const history = useHistory();
 
   const doubleClickHanlder = (values) => {
@@ -36,9 +26,25 @@ const CustomerOrder = () => {
     history.push(newPath);
   };
 
+  const datasource = customer.orders?.map((order, index) => {
+    const totalPrice = order.products.reduce(
+      (curr, { productQuantity, productPrice }) => {
+        return curr + productQuantity * productPrice;
+      },
+      0
+    );
+    return {
+      key: index,
+      id: index,
+      totalPrice,
+    };
+  });
+
+  console.log(datasource);
+
   return (
     <Table
-      dataSource={dataSource}
+      dataSource={datasource}
       columns={columns}
       onRow={(record) => {
         return {

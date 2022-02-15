@@ -7,10 +7,10 @@ import InfomationDetail from "./Information/InfomationDetail";
 import InformationForm from "./Information/InformationForm";
 import * as customerService from "../../firebase/firebase.service";
 
-const CustomerInfomation = ({ id }) => {
+const CustomerInfomation = (props) => {
+  const { id, customer } = props;
   const history = useHistory();
   const [edit, setEdit] = useState(false);
-  const [customer, setCustomer] = useState({});
 
   const isEditHandler = (value) => {
     setEdit(value);
@@ -20,38 +20,19 @@ const CustomerInfomation = ({ id }) => {
     isEditHandler(true);
   };
 
-  useEffect(() => {
-    let isSubcribed = true;
-
-    customerService
-      .findById("customers", id)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const value = snapshot.val();
-          if (isSubcribed) {
-            setCustomer(value);
-          }
-        } else {
-          console.log("No data available");
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-
-    return () => (isSubcribed = false);
-  }, [id]);
-
   const updateCustomerHandler = (values) => {
     const newCustomer = {
+      ...customer,
       ...values,
       phoneNumber: +values.phoneNumber,
     };
+
     const options = {
       id,
       service: "customers",
       value: newCustomer,
     };
+    
     customerService
       .updateById(options)
       .then(() => {

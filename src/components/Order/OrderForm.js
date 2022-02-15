@@ -17,20 +17,17 @@ const OrderForm = (props) => {
     props.newOrderHandler(values);
   };
 
- 
-  
-
   const onCustomerChange = (value) => {
     form.setFieldsValue({
-      customerID: value,
+      customerId: value,
       productId: "",
       productName: "",
       productPrice: "",
       productQuantity: "",
     });
+
     props.customerChangeHandler();
   };
-
 
   const customerIDs = customers?.map((customer) => {
     return (
@@ -86,7 +83,7 @@ const OrderForm = (props) => {
         <Form.Item label="Product ID" name="productId">
           <Input placeholder="ProductID" disabled />
         </Form.Item>
-        <Form.Item label="Price" name="productPrice" >
+        <Form.Item label="Price" name="productPrice">
           <Input placeholder="Enter the product price" disabled />
         </Form.Item>
         <Form.Item label="Quantity" name="productQuantity">

@@ -2,6 +2,7 @@ import { Table } from "antd";
 import Title from "antd/lib/typography/Title";
 import React from "react";
 import { useHistory, useParams } from "react-router-dom";
+import useFetchByID from "../hooks/useFetchByID";
 
 const dataSource = [
   {
@@ -43,6 +44,7 @@ const OrderDetail = () => {
     const newPath = `/product/${values.id}`;
     history.push(newPath);
   };
+
   return (
     <div className="margin-25">
       <Title level={4} type="secondary">
