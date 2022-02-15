@@ -1,4 +1,12 @@
-import { child, get, getDatabase, push, ref, update } from "firebase/database";
+import {
+  child,
+  get,
+  getDatabase,
+  push,
+  ref,
+  update,
+  serverTimestamp,
+} from "firebase/database";
 import { app } from "./firebase";
 
 const db = getDatabase(app);
@@ -17,6 +25,7 @@ const create = (nameService, values) => {
   return push(ref(db, nameService), {
     ...values,
     id: generateKey,
+    createdAt: serverTimestamp(),
   });
 };
 

@@ -14,13 +14,16 @@ const ProductForm = (props) => {
   return (
     <div className="margin-25">
       <Title level={4} type="secondary">
-        ProductForm
+        Product Form
       </Title>
       <Form {...formLayout} name="form-product" onFinish={onFinish}>
         <Form.Item label="Product Name" name="productName">
           <Input />
         </Form.Item>
         <Form.Item label="Product Price" name="productPrice">
+          <Input />
+        </Form.Item>
+        <Form.Item label="Product Quantity" name="productQuantity">
           <Input />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

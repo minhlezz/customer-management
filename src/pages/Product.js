@@ -48,6 +48,7 @@ const Product = () => {
     const newProduct = {
       productName: values.productName,
       productPrice: +values.productPrice,
+      productQuantity: +values.productQuantity
     };
     productService
       .create("products", newProduct)

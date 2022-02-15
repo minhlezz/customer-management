@@ -13,6 +13,9 @@ const ProductList = (props) => {
         <Descriptions.Item label="Price">
           {product.productPrice}
         </Descriptions.Item>
+        <Descriptions.Item label="Quanity">
+          {product.productQuantity}
+        </Descriptions.Item>
       </Fragment>
     );
   });
@@ -21,7 +24,7 @@ const ProductList = (props) => {
     <Descriptions
       title="List Product"
       bordered
-      column={2}
+      column={3}
       className="bg-white padding-top-20"
     >
       {productList}

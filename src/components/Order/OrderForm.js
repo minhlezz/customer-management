@@ -17,6 +17,21 @@ const OrderForm = (props) => {
     props.newOrderHandler(values);
   };
 
+ 
+  
+
+  const onCustomerChange = (value) => {
+    form.setFieldsValue({
+      customerID: value,
+      productId: "",
+      productName: "",
+      productPrice: "",
+      productQuantity: "",
+    });
+    props.customerChangeHandler();
+  };
+
+
   const customerIDs = customers?.map((customer) => {
     return (
       <Option key={customer.id} value={customer.id}>
@@ -25,7 +40,7 @@ const OrderForm = (props) => {
     );
   });
 
-  const nameProducts = products.map((product) => {
+  const nameProducts = products?.map((product) => {
     return (
       <Option key={product.id} value={product.productName}>
         {product.productName}
@@ -38,6 +53,8 @@ const OrderForm = (props) => {
 
     form.setFieldsValue({
       productPrice: isProduct.productPrice,
+      productId: isProduct.id,
+      productQuantity: isProduct.productQuantity,
     });
   };
 
@@ -47,22 +64,33 @@ const OrderForm = (props) => {
         Add A New Order
       </Title>
       <Form form={form} {...formLayout} name="form-order" onFinish={onFinish}>
-        <Form.Item label="Customer ID" name="customerID">
-          <Select allowClear placeholder="Select a customer">
+        <Form.Item label="Customer ID" name="customerId">
+          <Select
+            allowClear
+            placeholder="Select a customer"
+            onChange={onCustomerChange}
+          >
             {customerIDs}
           </Select>
         </Form.Item>
-        <Form.Item label="Product Name" name="product">
+        <Form.Item label="Product Name" name="productName">
           <Select
             allowClear
             onChange={productChangeHandler}
             placeholder="Select a Product"
+            value={products[0].productName}
           >
             {nameProducts}
           </Select>
         </Form.Item>
-        <Form.Item label="Price" name="productPrice">
-          <Input placeholder="Enter the product price" />
+        <Form.Item label="Product ID" name="productId">
+          <Input placeholder="ProductID" disabled />
+        </Form.Item>
+        <Form.Item label="Price" name="productPrice" >
+          <Input placeholder="Enter the product price" disabled />
+        </Form.Item>
+        <Form.Item label="Quantity" name="productQuantity">
+          <Input placeholder="Enter the product quantity" />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button
