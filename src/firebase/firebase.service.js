@@ -16,7 +16,7 @@ const create = (nameService, values) => {
   const generateKey = push(child(ref(db), `${nameService}`)).key;
   return push(ref(db, nameService), {
     ...values,
-    customerId: generateKey,
+    id: generateKey,
   });
 };
 

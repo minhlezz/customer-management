@@ -20,6 +20,10 @@
   margin: 25px;
 }
 
+.padding-top-20 {
+  padding-top: 20px;
+}
+
 .container {
   max-width: 1440px;
   margin: 0 auto;

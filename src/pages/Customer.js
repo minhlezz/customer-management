@@ -7,6 +7,7 @@ import Title from "antd/lib/typography/Title";
 import * as customerService from "../firebase/firebase.service";
 
 const columns = [
+  { title: "ID", dataIndex: "id", key: "id" },
   { title: "First Name", dataIndex: "firstName", key: "firstName" },
   { title: "Last Name", dataIndex: "lastName", key: "lastName" },
   { title: "Address", dataIndex: "address", key: "address" },
@@ -40,6 +41,7 @@ const Customer = () => {
           setIsLoading(false);
         } else {
           console.log("No data available");
+          setIsLoading(false);
         }
       })
       .catch((error) => {

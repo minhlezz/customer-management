@@ -59,7 +59,6 @@ const OrderDetail = () => {
           };
         }}
       />
-      ;
     </div>
   );
 };

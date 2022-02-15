@@ -6,6 +6,7 @@ import NewCustomer from "../pages/NewCustomer";
 import CustomerDetail from "../pages/CustomerDetail";
 import Order from "../pages/Order";
 import OrderDetail from "../pages/OrderDetail";
+import Product from "../pages/Product";
 import ProductDetail from "../pages/ProductDetail";
 
 import NotFound from "../pages/NotFound";
@@ -51,7 +52,13 @@ const mainRoutes = [
     component: OrderDetail,
     redirect: false,
   },
-
+  {
+    path: "/product",
+    name: "product",
+    component: Product,
+    exact: true,
+    redirect: false,
+  },
   {
     path: "/product/:productId",
     name: "productDetail",
