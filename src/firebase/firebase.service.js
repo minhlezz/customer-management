@@ -45,4 +45,5 @@ const testCreate = () => {
   const newPostKey = push(child(ref(db), "customers")).key;
   console.log(newPostKey);
 };
+
 export { findAll, findById, create, updateById, testCreate };

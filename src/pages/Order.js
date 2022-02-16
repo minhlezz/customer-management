@@ -1,23 +1,15 @@
 import React, { useState } from "react";
-import { Form, Spin } from "antd";
+import { Spin, Tabs } from "antd";
 
-import OrderForm from "../components/Order/OrderForm";
-import OrderList from "../components/Order/OrderList";
 import useFetch from "../hooks/useFetch";
-import * as orderService from "../firebase/firebase.service";
-import { useHistory } from "react-router-dom";
+import OrderCustomer from "../components/Order/OrderCustomer";
+import OrderTable from "../components/Order/OrderTable";
 
-const initOrder = {
-  customerId: "",
-  totalPrice: 0,
-  products: [],
-};
+const { TabPane } = Tabs;
 
 const Order = () => {
-  const [form] = Form.useForm();
-  const history = useHistory();
-
-  const [orders, setOrders] = useState(initOrder);
+  const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [customer, setCustomer] = useState({});
 
   const [customers, customerLoading, customerErrors] = useFetch("customers");
   const [products, productLoading, productErros] = useFetch("products");
@@ -26,73 +18,35 @@ const Order = () => {
   if (customerErrors || productErros)
     return <p>{customerErrors || productErros}</p>;
 
-  const newOrderHandler = (values) => {
-    let updatedProducts;
-    console.log(values);
+  const onTabCallback = (key) => {
+    console.log(key);
+  };
 
-    const newProduct = {
-      productId: values.productId,
-      productName: values.productName,
-      productPrice: values.productPrice,
-      productQuantity: +values.productQuantity,
-    };
-    const allProducts = orders.products;
-
-    const existingProductIndex = allProducts.findIndex(
-      (product) => product.productId === newProduct.productId
-    );
-
-    const existingProduct = allProducts[existingProductIndex];
-    if (existingProduct) {
-      const updatedProduct = {
-        ...existingProduct,
-        productQuantity:
-          existingProduct.productQuantity + newProduct.productQuantity,
-      };
-      updatedProducts = [...allProducts];
-      console.log(updatedProduct);
-      updatedProducts[existingProductIndex] = updatedProduct;
-    } else {
-      updatedProducts = allProducts.concat(newProduct);
+  const selectChangeHandler = (value) => {
+    let result = {};
+    const filterCustomer = customers.filter((item) => item.id === value);
+    if (filterCustomer.length && filterCustomer.length < 2) {
+      result = filterCustomer[0];
     }
-
-    setOrders({
-      customerId: values.customerId,
-      products: updatedProducts,
-    });
-  };
-
-  const customerChangeHandler = () => {
-    setOrders(initOrder);
-  };
-
-  const checkoutHandler = () => {
-    const newOrder = {
-      ...orders,
-    };
-    orderService
-      .create("orders", newOrder)
-      .then(() => {
-        console.log("success");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    setOrders(initOrder);
-    history.push("/");
+    setSelectedCustomer(value);
+    setCustomer(result);
   };
 
   return (
-    <div>
-      <OrderForm
-        newOrderHandler={newOrderHandler}
-        customers={customers}
-        products={products}
-        customerChangeHandler={customerChangeHandler}
-        form={form}
-      />
-      <OrderList orders={orders} checkoutHandler={checkoutHandler} />
+    <div className="margin-25">
+      <Tabs defaultActiveKey="1" onChange={onTabCallback}>
+        <TabPane tab="Customer" key="1">
+          <OrderCustomer
+            customers={customers}
+            customer={customer}
+            selectedCustomer={selectedCustomer}
+            selectChangeHandler={selectChangeHandler}
+          />
+        </TabPane>
+        <TabPane tab="Order" key="2">
+          <OrderTable products={products} />
+        </TabPane>
+      </Tabs>
     </div>
   );
 };

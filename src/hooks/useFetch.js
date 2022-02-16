@@ -35,7 +35,7 @@ const useFetch = (nameService) => {
     return () => (isSubcribed = false);
   }, [nameService]);
 
-  return [data, isLoading, errors];
+  return [data, isLoading, errors, setData];
 };
 
 export default useFetch;

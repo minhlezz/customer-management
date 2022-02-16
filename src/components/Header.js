@@ -1,14 +1,21 @@
-import { Layout } from "antd";
-import Title from "antd/lib/typography/Title";
 import React from "react";
+import { Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <Layout.Header style={{ padding: 0 }} className="bg-grey">
-      <Link to="/">
-        <Title style={{ textAlign: "center" }}>Customer Management</Title>
-      </Link>
+    <Layout.Header className="bg-grey" style={{ padding: 0 }}>
+      <Menu theme="light" mode="horizontal" defaultSelectedKeys={["2"]}>
+        <Menu.Item key="1">
+          <Link to="/customer">Customer</Link>
+        </Menu.Item>
+        <Menu.Item key="3">
+          <Link to="/order">Order</Link>
+        </Menu.Item>
+        <Menu.Item key="2">
+          <Link to="/product">Product</Link>
+        </Menu.Item>
+      </Menu>
     </Layout.Header>
   );
 };

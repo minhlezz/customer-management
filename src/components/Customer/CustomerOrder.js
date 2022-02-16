@@ -40,7 +40,7 @@ const CustomerOrder = (props) => {
     };
   });
 
-  console.log(datasource);
+  
 
   return (
     <Table
