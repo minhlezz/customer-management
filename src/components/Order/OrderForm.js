@@ -1,105 +1,76 @@
 import React from "react";
-import Title from "antd/lib/typography/Title";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, InputNumber, Select, Typography } from "antd";
 
-const formLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 12 },
 };
 
-const { Option } = Select;
+const tailLayout = {
+  wrapperCol: { offset: 8, span: 16 },
+};
 
 const OrderForm = (props) => {
-  const { customers, products } = props;
+  const { customer, products, selectedCustomer } = props;
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    props.newOrderHandler(values);
+    props.addOrderHandler(values);
+    form.resetFields();
   };
 
-  const onCustomerChange = (value) => {
-    form.setFieldsValue({
-      customerId: value,
-      productId: "",
-      productName: "",
-      productPrice: "",
-      productQuantity: "",
-    });
-
-    props.customerChangeHandler();
-  };
-
-  const customerIDs = customers?.map((customer) => {
+  const productLists = products.map((item) => {
     return (
-      <Option key={customer.id} value={customer.id}>
-        {customer.id}
-      </Option>
+      <Select.Option value={item.productName} key={item.id}>
+        {item.productName}
+      </Select.Option>
     );
   });
 
-  const nameProducts = products?.map((product) => {
-    return (
-      <Option key={product.id} value={product.productName}>
-        {product.productName}
-      </Option>
-    );
-  });
-
-  const productChangeHandler = (value) => {
-    const isProduct = products.find((product) => product.productName === value);
-
+  const onProductChange = (value) => {
+    const product = products.filter((item) => item.productName === value);
+    const result = product[0];
     form.setFieldsValue({
-      productPrice: isProduct.productPrice,
-      productId: isProduct.id,
-      productQuantity: isProduct.productQuantity,
+      productPrice: result.productPrice,
+      productQuantity: 1,
     });
   };
 
   return (
-    <div className="margin-25">
-      <Title level={4} type="secondary">
-        Add A New Order
-      </Title>
-      <Form form={form} {...formLayout} name="form-order" onFinish={onFinish}>
-        <Form.Item label="Customer ID" name="customerId">
-          <Select
-            allowClear
-            placeholder="Select a customer"
-            onChange={onCustomerChange}
+    <div>
+      {selectedCustomer && (
+        <Form form={form} onFinish={onFinish} {...layout} name="form-order">
+          <Typography.Title level={4} type="secondary">
+            Add Product
+          </Typography.Title>
+          <Form.Item
+            name="productName"
+            label="Product Name"
+            rules={[{ required: true }]}
           >
-            {customerIDs}
-          </Select>
-        </Form.Item>
-        <Form.Item label="Product Name" name="productName">
-          <Select
-            allowClear
-            onChange={productChangeHandler}
-            placeholder="Select a Product"
-            value={products[0].productName}
+            <Select onChange={onProductChange}>{productLists}</Select>
+          </Form.Item>
+          <Form.Item
+            name="productPrice"
+            label="Product Price"
+            rules={[{ required: true }]}
           >
-            {nameProducts}
-          </Select>
-        </Form.Item>
-        <Form.Item label="Product ID" name="productId">
-          <Input placeholder="ProductID" disabled />
-        </Form.Item>
-        <Form.Item label="Price" name="productPrice">
-          <Input placeholder="Enter the product price" disabled />
-        </Form.Item>
-        <Form.Item label="Quantity" name="productQuantity">
-          <Input placeholder="Enter the product quantity" />
-        </Form.Item>
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ marginRight: "10px" }}
+            <InputNumber />
+          </Form.Item>
+          <Form.Item
+            name="productQuantity"
+            label="Product Quantity"
+            rules={[{ required: true }]}
           >
-            Submit
-          </Button>
-          <Button htmlType="button">Reset</Button>
-        </Form.Item>
-      </Form>
+            <InputNumber />
+          </Form.Item>
+          <Form.Item {...tailLayout}>
+            <Button type="primary" htmlType="submit">
+              ADD
+            </Button>
+          </Form.Item>
+        </Form>
+      )}
     </div>
   );
 };

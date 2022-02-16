@@ -4,7 +4,7 @@ import { Descriptions, Select } from "antd";
 const { Option } = Select;
 
 const OrderCustomer = (props) => {
-  const { selectedCustomer, customer, customers } = props;
+  const { customer, customers, selectedCustomer } = props;
 
   const onValueChange = (value) => {
     props.selectChangeHandler(value);
@@ -22,7 +22,7 @@ const OrderCustomer = (props) => {
     );
   });
 
-  const { address, email, firstName, lastName, phoneNumber, id } = customer;
+  const { address, email, firstName, lastName, phoneNumber } = customer;
 
   return (
     <div>
@@ -41,7 +41,7 @@ const OrderCustomer = (props) => {
       >
         {customerLists}
       </Select>
-      {id && (
+      {selectedCustomer && (
         <Descriptions
           bordered
           title="Custom Information"
