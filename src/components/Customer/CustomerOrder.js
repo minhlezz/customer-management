@@ -1,50 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Table } from "antd";
-
-
+import { toFormatDate } from "../../utils/utils";
 
 const columns = [
   {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
   },
   {
-    title: "Total Price",
-    dataIndex: "totalPrice",
-    key: "totalPrice",
+    title: "Order ID",
+    dataIndex: "orderId",
+    key: "orderId",
+  },
+  {
+    title: "Total Amount",
+    dataIndex: "totalAmount",
+    key: "totalAmount",
   },
 ];
 
 const CustomerOrder = (props) => {
-  const { customer } = props;
+  const { orders, id } = props;
+  const [order, setOrder] = useState([]);
   const history = useHistory();
 
-  const doubleClickHanlder = (values) => {
-    const newPath = `/order/${values.id}`;
+  const findCustomerOrder = (orders) => {
+    let customerOrder = [];
+    orders.forEach((order) => {
+      if (order.customerId === id) {
+        customerOrder.push(order);
+      }
+    });
+    return customerOrder;
+  };
+
+  useEffect(() => {
+    const order = findCustomerOrder(orders);
+    setOrder(order);
+    
+  }, [id, orders]);
+
+  const doubleClickHanlder = (record) => {
+    const newPath = `/order/${record.orderId}`;
     history.push(newPath);
   };
 
-  const datasource = customer.orders?.map((order, index) => {
-    const totalPrice = order.products.reduce(
-      (curr, { productQuantity, productPrice }) => {
-        return curr + productQuantity * productPrice;
+  const orderHistory = order.map((item, index) => {
+    const totalAmount = item.products.reduce(
+      (acc, { productQuantity, productPrice }) => {
+        return acc + productQuantity * productPrice;
       },
       0
     );
     return {
       key: index,
-      id: index,
-      totalPrice,
+      date: toFormatDate(item.createdAt),
+      orderId: item.id,
+      totalAmount,
     };
   });
-
-  
+  console.log(order);
 
   return (
     <Table
-      dataSource={datasource}
+      dataSource={orderHistory}
       columns={columns}
       onRow={(record) => {
         return {

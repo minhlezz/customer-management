@@ -33,36 +33,57 @@ const CustomerForm = (props) => {
       <Title level={4} type="secondary">
         Add New User
       </Title>
+      <div className="dflex justify-end">
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            ADD
+          </Button>
+        </Form.Item>
+      </div>
       <Row gutter={24} className="bg-white" style={{ padding: "15px" }}>
         <Col span={12}>
-          <Form.Item name="firstName" label="First Name">
+          <Form.Item
+            name="firstName"
+            label="First Name"
+            rules={[
+              { required: true, message: "Please input your First Name!" },
+            ]}
+          >
             <Input placeholder="Enter your first name...." />
           </Form.Item>
-          <Form.Item name="lastName" label="Last Name">
+          <Form.Item
+            name="lastName"
+            label="Last Name"
+            rules={[
+              { required: true, message: "Please input your Last Name!" },
+            ]}
+          >
             <Input placeholder="Enter your last name...." />
           </Form.Item>
-          <Form.Item name="address" label="Address">
+          <Form.Item
+            name="address"
+            label="Address"
+            rules={[{ required: true, message: "Please input your Address !" }]}
+          >
             <Input placeholder="Enter your address...." />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="email" label="Email">
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ required: true, message: "Please input your Email !" }]}
+          >
             <Input placeholder="Enter your email...." />
           </Form.Item>
-          <Form.Item name="phoneNumber" label="Phone Number">
+          <Form.Item
+            name="phoneNumber"
+            label="Phone Number"
+            rules={[
+              { required: true, message: "Please input your Phone Number!" },
+            ]}
+          >
             <Input placeholder="Enter your phone number...." />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item noStyle>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ marginRight: "10px" }}
-            >
-              Submit
-            </Button>
-            <Button htmlType="button">Reset</Button>
           </Form.Item>
         </Col>
       </Row>

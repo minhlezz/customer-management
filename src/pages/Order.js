@@ -4,6 +4,8 @@ import { Button, Spin, Tabs } from "antd";
 import useFetch from "../hooks/useFetch";
 import OrderCustomer from "../components/Order/OrderCustomer";
 import OrderTable from "../components/Order/OrderTable";
+import * as orderService from "../firebase/firebase.service";
+import { useHistory } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
@@ -12,8 +14,10 @@ const initOrder = {
   products: [],
 };
 const Order = () => {
+  const history = useHistory();
   const [order, setOrder] = useState(initOrder);
   const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
 
   const [customers, customerLoading, customerErrors] = useFetch("customers");
   const [products, productLoading, productErros] = useFetch("products");
@@ -37,6 +41,7 @@ const Order = () => {
       ...initOrder,
       customer: result,
     });
+    updateEditHandler(false);
   };
 
   const checkOutHandler = () => {
@@ -44,7 +49,10 @@ const Order = () => {
       customerId: order.customer.id,
       products: order.products,
     };
-    console.log(newOrder);
+    orderService.create("orders", newOrder).catch((err) => {
+      console.log(err);
+    });
+    history.push("/customer");
   };
 
   const updateProductHandler = (values) => {
@@ -54,18 +62,25 @@ const Order = () => {
     });
   };
 
+  const updateEditHandler = (value) => {
+    setIsEdit(value);
+  };
+
   return (
     <div className="margin-25">
-      <div className="dflex justify-end">
-        <Button
-          type="primary"
-          danger
-          onClick={checkOutHandler}
-          disabled={!order.products.length > 0}
-        >
-          Checkout
-        </Button>
-      </div>
+      {order.products.length > 0 && (
+        <div className="dflex justify-end">
+          <Button
+            type="primary"
+            danger
+            onClick={checkOutHandler}
+            disabled={isEdit}
+          >
+            Checkout
+          </Button>
+        </div>
+      )}
+
       <Tabs defaultActiveKey="1" onChange={onTabCallback}>
         <TabPane tab="Order" key="1">
           <OrderCustomer
@@ -80,6 +95,8 @@ const Order = () => {
             products={products}
             data={order.products}
             updateProductHandler={updateProductHandler}
+            isEdit={isEdit}
+            updateEditHandler={updateEditHandler}
           />
         </TabPane>
       </Tabs>

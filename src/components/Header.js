@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Header = () => {
   return (
     <Layout.Header className="bg-grey" style={{ padding: 0 }}>
-      <Menu theme="light" mode="horizontal" defaultSelectedKeys={["2"]}>
+      <Menu theme="light" mode="horizontal">
         <Menu.Item key="1">
           <Link to="/customer">Customer</Link>
         </Menu.Item>

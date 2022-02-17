@@ -68,12 +68,12 @@ const EditableCell = ({
 };
 
 const OrderTable = (props) => {
-  const { products, data, updateProductHandler } = props;
+  const { products, data, updateProductHandler, isEdit, updateEditHandler } =
+    props;
   const [form] = Form.useForm();
 
   const [editingKey, setEditingKey] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
-  const [isEdit, setIsEdit] = useState(false);
 
   const isEditing = (record) => record.key === editingKey;
 
@@ -85,7 +85,7 @@ const OrderTable = (props) => {
   });
 
   const edit = (record) => {
-    setIsEdit(true);
+    updateEditHandler(true);
     if (record.key === "init") {
       record.key = Math.floor(Math.random() * 1000);
       form.setFieldsValue({
@@ -113,7 +113,7 @@ const OrderTable = (props) => {
       updateProductHandler(removeRecord);
     }
     setEditingKey("");
-    setIsEdit(false);
+    updateEditHandler(false);
   };
 
   const addNewOrder = () => {
@@ -150,7 +150,7 @@ const OrderTable = (props) => {
         updateProductHandler(newData);
         setEditingKey("");
       }
-      setIsEdit(false);
+      updateEditHandler(false);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
@@ -226,7 +226,9 @@ const OrderTable = (props) => {
                 title="Sure to delete?"
                 onConfirm={() => handleDelete(record.key)}
               >
-                <Typography.Link type="warning">Delete</Typography.Link>
+                <Typography.Link type="warning" disabled={editingKey !== ""}>
+                  Delete
+                </Typography.Link>
               </Popconfirm>
             ) : null}
           </span>

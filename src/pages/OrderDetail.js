@@ -1,57 +1,67 @@
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 import Title from "antd/lib/typography/Title";
 import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 import useFetchByID from "../hooks/useFetchByID";
-
-const dataSource = [
-  {
-    key: "1",
-    id: "product-1",
-    product: "Mike",
-    price: 32,
-  },
-  {
-    key: "2",
-    id: "product-2",
-    product: "John",
-    price: 42,
-  },
-];
+import { toFormatDate } from "../utils/utils";
 
 const columns = [
   {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
     title: "Product",
-    dataIndex: "product",
-    key: "product",
+    dataIndex: "productName",
+    key: "productName",
   },
   {
     title: "Price",
-    dataIndex: "price",
-    key: "price",
+    dataIndex: "productPrice",
+    key: "productPrice",
+  },
+  {
+    title: "Quantity",
+    dataIndex: "productQuantity",
+    key: "productQuantity",
+  },
+  {
+    title: "ID",
+    dataIndex: "productId",
+    key: "productId",
   },
 ];
 
 const OrderDetail = () => {
-  const params = useParams();
   const history = useHistory();
-  const doubleClickHanlder = (values) => {
-    const newPath = `/product/${values.id}`;
+  const params = useParams();
+  const id = params.orderId;
+  const [order, loading, error] = useFetchByID("orders", {
+    id,
+  });
+
+  if (loading) return <Spin />;
+  if (error) return <p>{error}</p>;
+
+  const doubleClickHanlder = (record) => {
+    const newPath = `/product/${record.productId}`;
     history.push(newPath);
   };
+
+  const products = order.products.map((item, index) => {
+    return {
+      key: index,
+      productName: item.productName,
+      productPrice: item.productPrice,
+      productQuantity: item.productQuantity,
+      productId: item.productId,
+    };
+  });
+  const { createdAt } = order;
 
   return (
     <div className="margin-25">
       <Title level={4} type="secondary">
-        OrderDetail - {params.orderId}
+        OrderDetail - {toFormatDate(createdAt)}
       </Title>
       <Table
-        dataSource={dataSource}
+        dataSource={products}
         columns={columns}
         onRow={(record) => {
           return {

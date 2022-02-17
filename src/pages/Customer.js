@@ -78,7 +78,6 @@ const Customer = () => {
 
   if (errors) return <p>{errors}</p>;
 
-  console.log(customers);
   return (
     <div className="margin-25">
       <Title level={4} type="secondary">
