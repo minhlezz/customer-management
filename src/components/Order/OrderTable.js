@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Button,
   Form,
   Input,
   InputNumber,
@@ -10,16 +11,7 @@ import {
 } from "antd";
 
 const { Option } = Select;
-const originData = [];
 
-for (let i = 0; i < 20; i++) {
-  originData.push({
-    key: i.toString(),
-    productName: `Model ${i}`,
-    productPrice: 32000,
-    productQuantity: `${i + 1}`,
-  });
-}
 const EditableCell = ({
   editing,
   dataIndex,
@@ -28,15 +20,23 @@ const EditableCell = ({
   record,
   index,
   children,
+  option,
+  selectChange,
   ...restProps
 }) => {
+  const onSelectChange = (value) => {
+    selectChange(value);
+  };
+
   let inputNode;
   if (dataIndex === "productName") {
     inputNode = (
-      <Select>
-        <Option value="jack">Jack</Option>
-        <Option value="lucy">Lucy</Option>
-        <Option value="Yiminghe">yiminghe</Option>
+      <Select onChange={onSelectChange}>
+        {option.map((op) => (
+          <Option value={op.productName} key={op.productId}>
+            {op.productName}
+          </Option>
+        ))}
       </Select>
     );
   } else {
@@ -66,45 +66,108 @@ const EditableCell = ({
     </td>
   );
 };
-const OrderTable = () => {
+
+const OrderTable = (props) => {
+  const { products, data, updateProductHandler } = props;
   const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
+
   const [editingKey, setEditingKey] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
 
   const isEditing = (record) => record.key === editingKey;
 
+  const productOption = products.map(({ productName, id }) => {
+    return {
+      productName,
+      productId: id,
+    };
+  });
+
   const edit = (record) => {
-    form.setFieldsValue({
-      productName: "",
-      productPrice: "",
-      productQuantity: "",
-      ...record,
-    });
+    setIsEdit(true);
+    if (record.key === "init") {
+      record.key = Math.floor(Math.random() * 1000);
+      form.setFieldsValue({
+        ...record,
+        productName: "",
+        productPrice: "",
+        productQuantity: "",
+        productId: "",
+      });
+    } else {
+      form.setFieldsValue({
+        productName: "",
+        productPrice: "",
+        productQuantity: "",
+        productId: "",
+        ...record,
+      });
+    }
     setEditingKey(record.key);
   };
 
-  const cancel = () => {
+  const cancel = (record) => {
+    if (record.status === "init") {
+      const removeRecord = data.filter((item) => item.key !== record.key);
+      updateProductHandler(removeRecord);
+    }
     setEditingKey("");
+    setIsEdit(false);
   };
-  const save = async (key) => {
+
+  const addNewOrder = () => {
+    const newOrder = {
+      key: "init",
+      productName: "",
+      productPrice: 0,
+      productQuantity: 0,
+      productId: "",
+      status: "init",
+    };
+    const updateData = [...data, newOrder];
+    updateProductHandler(updateData);
+    edit(newOrder);
+  };
+
+  const save = async (record) => {
     try {
       const row = await form.validateFields();
       const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
+      const index = newData.findIndex((item) => record.key === item.key);
 
       if (index > -1) {
-        const item = newData[index];
+        const item = {
+          ...newData[index],
+          productId: selectedProduct.id,
+          status: "updated",
+        };
         newData.splice(index, 1, { ...item, ...row });
-        setData(newData);
+        updateProductHandler(newData);
         setEditingKey("");
       } else {
         newData.push(row);
-        setData(newData);
+        updateProductHandler(newData);
         setEditingKey("");
       }
+      setIsEdit(false);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
+  };
+
+  const handleDelete = (key) => {
+    const newData = data.filter((item) => item.key !== key);
+    updateProductHandler(newData);
+  };
+
+  const selectedProductHandler = (value) => {
+    const isProduct = products.find((item) => item.productName === value);
+    form.setFieldsValue({
+      productPrice: isProduct.productPrice,
+      productQuantity: 1,
+    });
+    setSelectedProduct(isProduct);
   };
 
   const columns = [
@@ -133,25 +196,40 @@ const OrderTable = () => {
         const editable = isEditing(record);
         return editable ? (
           <span>
-            <Typography.Link 
-              onClick={() => save(record.key)}
+            <Typography.Link
+              onClick={() => save(record)}
               style={{
                 marginRight: 8,
               }}
             >
               Save
             </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-            <Typography.Link>Cancel</Typography.Link>
+            <Popconfirm
+              title="Sure to cancel?"
+              onConfirm={() => cancel(record)}
+            >
+              <Typography.Link>Cancel</Typography.Link>
             </Popconfirm>
           </span>
         ) : (
-          <Typography.Link
-            disabled={editingKey !== ""}
-            onClick={() => edit(record)}
-          >
-            Edit
-          </Typography.Link>
+          <span>
+            <Typography.Link
+              type="default"
+              style={{ marginRight: "10px" }}
+              disabled={editingKey !== ""}
+              onClick={() => edit(record)}
+            >
+              Edit
+            </Typography.Link>
+            {data.length >= 1 ? (
+              <Popconfirm
+                title="Sure to delete?"
+                onConfirm={() => handleDelete(record.key)}
+              >
+                <Typography.Link type="warning">Delete</Typography.Link>
+              </Popconfirm>
+            ) : null}
+          </span>
         );
       },
     },
@@ -172,11 +250,23 @@ const OrderTable = () => {
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        option: productOption,
+        selectChange: selectedProductHandler,
       }),
     };
   });
   return (
     <Form form={form} component={false}>
+      <Button
+        onClick={addNewOrder}
+        type="primary"
+        style={{
+          marginBottom: 16,
+        }}
+        disabled={isEdit}
+      >
+        Add a row
+      </Button>
       <Table
         components={{
           body: {

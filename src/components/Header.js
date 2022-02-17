@@ -9,10 +9,10 @@ const Header = () => {
         <Menu.Item key="1">
           <Link to="/customer">Customer</Link>
         </Menu.Item>
-        <Menu.Item key="3">
+        <Menu.Item key="2">
           <Link to="/order">Order</Link>
         </Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="3">
           <Link to="/product">Product</Link>
         </Menu.Item>
       </Menu>

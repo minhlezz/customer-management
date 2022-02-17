@@ -1,21 +1,19 @@
 import React, { useState } from "react";
-import { Col, Row, Spin, Tabs } from "antd";
+import { Button, Spin, Tabs } from "antd";
 
 import useFetch from "../hooks/useFetch";
 import OrderCustomer from "../components/Order/OrderCustomer";
 import OrderTable from "../components/Order/OrderTable";
-import OrderForm from "../components/Order/OrderForm";
 
 const { TabPane } = Tabs;
 
+const initOrder = {
+  customer: {},
+  products: [],
+};
 const Order = () => {
-  const [customer, setCustomer] = useState({});
+  const [order, setOrder] = useState(initOrder);
   const [selectedCustomer, setSelectedCustomer] = useState("");
-
-  const [order, setOrder] = useState({
-    customerID: "",
-    products: [],
-  });
 
   const [customers, customerLoading, customerErrors] = useFetch("customers");
   const [products, productLoading, productErros] = useFetch("products");
@@ -29,48 +27,60 @@ const Order = () => {
   };
 
   const selectChangeHandler = (value) => {
-    console.log(value);
     let result = {};
     const filterCustomer = customers.filter((item) => item.id === value);
     if (filterCustomer.length && filterCustomer.length < 2) {
       result = filterCustomer[0];
     }
     setSelectedCustomer(value);
-    setCustomer(result);
-  };
-
-  const addOrderHandler = (values) => {
-    console.log(values);
     setOrder({
-      customerID: selectedCustomer,
-      products: [...order.products, values],
+      ...initOrder,
+      customer: result,
     });
   };
+
+  const checkOutHandler = () => {
+    const newOrder = {
+      customerId: order.customer.id,
+      products: order.products,
+    };
+    console.log(newOrder);
+  };
+
+  const updateProductHandler = (values) => {
+    setOrder({
+      ...order,
+      products: values,
+    });
+  };
+
   return (
     <div className="margin-25">
+      <div className="dflex justify-end">
+        <Button
+          type="primary"
+          danger
+          onClick={checkOutHandler}
+          disabled={!order.products.length > 0}
+        >
+          Checkout
+        </Button>
+      </div>
       <Tabs defaultActiveKey="1" onChange={onTabCallback}>
         <TabPane tab="Order" key="1">
-          <Row>
-            <Col span={8}>
-              <OrderCustomer
-                customers={customers}
-                customer={customer}
-                selectedCustomer={selectedCustomer}
-                selectChangeHandler={selectChangeHandler}
-              />
-            </Col>
-            <Col span={8} offset={4}>
-              <OrderForm
-                products={products}
-                customer={customer}
-                addOrderHandler={addOrderHandler}
-                selectedCustomer={selectedCustomer}
-              />
-            </Col>
-          </Row>
+          <OrderCustomer
+            customers={customers}
+            customer={order.customer}
+            selectedCustomer={selectedCustomer}
+            selectChangeHandler={selectChangeHandler}
+          />
         </TabPane>
-        <TabPane tab="Order List" key="2">
-          <OrderTable products={products} />
+        <TabPane tab="Order List" key="2" disabled={!selectedCustomer}>
+          <OrderTable
+            products={products}
+            data={order.products}
+            updateProductHandler={updateProductHandler}
+          />
         </TabPane>
       </Tabs>
     </div>
