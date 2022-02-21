@@ -7,16 +7,16 @@ const selectOption = [
   { label: "david", value: "david" },
   { label: "rose", value: "rose" },
 ];
-const areaOptions =[
+const areaOptions = [
   { label: "BH", value: "BH" },
   { label: "Q1", value: "Q1" },
   { label: "BT", value: "BT" },
-]
+];
 
 const originData = [];
 for (let i = 0; i < 4; i++) {
   originData.push({
-    key: i.toString()*Math.floor(Math.random()*1000),
+    key: i.toString() * Math.floor(Math.random() * 1000),
     name: `Edrward ${i}`,
     age: 32,
     area: `Area ${i}`,
@@ -25,27 +25,26 @@ for (let i = 0; i < 4; i++) {
 }
 
 const Test = () => {
-  const [editableRowKeys, setEditableRowKeys] = useState(() => []);
-  
+  const [editableRowKeys, setEditableRowKeys] = useState([]);
+
   const selectChangeHandler = ({ value, form, record }) => {
     if (value === "lucy") {
       form.setFieldsValue({
-          [record.key] : {
-            name: value,
-            age: 40
-          }
+        [record.key]: {
+          name: value,
+          age: 40,
+        },
       });
     }
   };
 
-   
   const areaSelectHandler = ({ value, form, record }) => {
     console.log(record);
     if (value === "BH") {
       form.setFieldsValue({
-          [record.key] : {
-            address: "30 jump street"
-          }
+        [record.key]: {
+          address: "30 jump street",
+        },
       });
     }
   };
@@ -94,15 +93,15 @@ const Test = () => {
     },
   ];
 
- 
-
   return (
     <div className="margin-25">
-    
       <EditableTable
         columns={columns}
         dataSource={originData}
         components={components}
+        onAddRow={{
+          title: "Add More User",
+        }}
         editable={{
           type: "multiple",
           editableRowKeys,

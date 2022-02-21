@@ -14,3 +14,24 @@ export const convertToArrayObj = (obj) => {
   }
   return result;
 };
+
+export const generateKeyObj = (arrayObj) => {
+  let result;
+  let duplicate;
+  const arrObj = arrayObj;
+  const length = arrObj.length;
+  result = Math.floor(Math.random() * 1000 + length);
+  for (let key in arrObj) {
+    if (arrObj[key] === result) {
+      duplicate = true;
+    } else {
+      duplicate = false;
+    }
+  }
+
+  if (duplicate) {
+    generateKeyObj(arrObj);
+  }
+
+  return result;
+};

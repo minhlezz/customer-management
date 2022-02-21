@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { Button, Form, Popconfirm, Table, Typography } from "antd";
 import { EditOutlined } from "@ant-design/icons";
-import { convertToArrayObj } from "../../utils/utils";
+import { convertToArrayObj, generateKeyObj } from "../../utils/utils";
 
-const EditableTable = ({ columns, dataSource, components, editable }) => {
+const EditableTable = ({
+  columns,
+  dataSource,
+  components,
+  editable,
+  onAddRow,
+}) => {
   const { editableRowKeys, updateRowKeys, type } = editable;
+
   const [form] = Form.useForm();
 
   const [data, setData] = useState(dataSource);
@@ -68,23 +75,35 @@ const EditableTable = ({ columns, dataSource, components, editable }) => {
   };
 
   const onEdit = () => {
-    const rowKeys = dataSource.map((item) => item.key);
+    const rowKeys = data.map((item) => item.key);
     updateRowKeys(rowKeys);
     fillValuesForm(rowKeys);
     setToggle(true);
   };
 
-  const saveHandler = async () => {
-    await form.validateFields();
-    const formValues = form.getFieldsValue();
-    const formArrayValues = convertToArrayObj(formValues);
-    setData(formArrayValues);
-    updateRowKeys([]);
-    setToggle(false);
-  };
-
   const onCancel = () => {
     updateRowKeys([]);
+    if (type === "multiple") {
+      setToggle(false);
+    }
+  };
+
+  const onFinish = (value) => {
+    const newData = convertToArrayObj(value);
+    setData(newData);
+    onCancel();
+  };
+
+  const saveHandler = async () => {
+    await form.validateFields();
+    form.submit();
+  };
+
+  const addRowHandler = () => {
+    const generateKey = generateKeyObj(data);
+    const newData = [...data, { key: generateKey }];
+    updateRowKeys([...editableRowKeys, generateKey]);
+    setData(newData);
   };
 
   const operation = {
@@ -158,12 +177,21 @@ const EditableTable = ({ columns, dataSource, components, editable }) => {
             Save
           </Button>
         )}
+        {onAddRow?.title && toggle && (
+          <Button onClick={onCancel}>Cancel</Button>
+        )}
       </div>
     );
   };
 
   return (
-    <Form form={form} component={false}>
+    <Form form={form} component={false} onFinish={onFinish}>
+      {onAddRow?.title && toggle && (
+        <Fragment>
+          <Button onClick={addRowHandler}>{onAddRow?.title}</Button>
+        </Fragment>
+      )}
+
       {type === "multiple" && <ButtonMultipleEdit />}
       <Table
         components={components}
