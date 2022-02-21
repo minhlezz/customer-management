@@ -15,6 +15,9 @@ const Header = () => {
         <Menu.Item key="3">
           <Link to="/product">Product</Link>
         </Menu.Item>
+        <Menu.Item key="test">
+          <Link to="/test">Test</Link>
+        </Menu.Item>
       </Menu>
     </Layout.Header>
   );

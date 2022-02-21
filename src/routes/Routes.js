@@ -11,6 +11,7 @@ import ProductDetail from "../pages/ProductDetail";
 
 import NotFound from "../pages/NotFound";
 import RedirectRoute from "./RedirectRoute";
+import Test from "../pages/Test";
 
 const mainRoutes = [
   {
@@ -63,6 +64,14 @@ const mainRoutes = [
     path: "/product/:productId",
     name: "productDetail",
     component: ProductDetail,
+    redirect: false,
+  },
+
+  {
+    path: "/test",
+    name: "test",
+    component: Test,
+    exact: true,
     redirect: false,
   },
 
