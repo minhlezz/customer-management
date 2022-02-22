@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Form, Input, Select } from "antd";
 
 const EditableCell = ({
   dataIndex,
   title,
+  type,
   valueType,
   record,
   index,
@@ -12,19 +13,21 @@ const EditableCell = ({
   onChange,
   valueChange,
   handleSave,
-  editable,
+  editing,
   form,
   ...restProps
 }) => {
-
   const save = async () => {
     try {
       const values = await form.validateFields();
       const updateRecord = values[record.key];
-      handleSave({...values, updatedRecord: {
-        ...updateRecord,
-        key: record.key
-      }});
+      handleSave({
+        ...values,
+        updatedRecord: {
+          ...updateRecord,
+          key: record.key,
+        },
+      });
     } catch (errInfo) {
       console.log("Save failed:", errInfo);
     }
@@ -33,20 +36,19 @@ const EditableCell = ({
   const handleChange = (value) => {
     onChange({ value, form, record });
   };
-  
 
-  const selectComponent = (
-    <Select
-      onChange={handleChange}
-      options={options}
-      onBlur={save}
-    />
-  );
-  const inputComponent = <Input onPressEnter={save} onBlur={save} />;
+  const selectComponent =
+    type === "single" ? (
+      <Select onChange={handleChange} options={options} />
+    ) : (
+      <Select onChange={handleChange} options={options} onBlur={save} />
+    );
+  const inputComponent =
+    type === "single" ? <Input /> : <Input onPressEnter={save} onBlur={save} />;
 
   let childNode;
 
-  if (editable) {
+  if (editing) {
     switch (valueType) {
       case "select":
         childNode = selectComponent;
@@ -56,12 +58,14 @@ const EditableCell = ({
         break;
     }
   }
-
-  const keyString = record.key.toString();
+  let keyString;
+  if (record) {
+    keyString = record?.key.toString();
+  }
 
   return (
     <td {...restProps}>
-      {editable ? (
+      {editing ? (
         <Form.Item
           name={[keyString, dataIndex]}
           style={{
@@ -77,7 +81,13 @@ const EditableCell = ({
           {childNode}
         </Form.Item>
       ) : (
-        children
+        <div
+          style={{
+            paddingRight: 24,
+          }}
+        >
+          {children}
+        </div>
       )}
     </td>
   );

@@ -1,19 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Popconfirm, Table, Typography } from "antd";
 import { generateKey } from "../../utils/utils";
+import { Fragment } from "react/cjs/react.production.min";
 
 const EditableTable = ({
   columns,
   dataSource,
   components,
-  addRow,
+  editable,
   children,
   childRef,
-  onFinishFormSubmit
+  onFinishFormSubmit,
 }) => {
-  const { title } = addRow;
+  const { addRow, type } = editable;
   const [form] = Form.useForm();
   const [data, setData] = useState(() => dataSource);
+  const [cellEditingKey, setCellEditingKey] = useState("");
+
+  const rowIsEditing = (record) => record.key === cellEditingKey;
+
+  const rowEditHandler = (record) => {
+    setCellEditingKey(record.key);
+  };
+
+  const onCancelEditRow = () => {
+    setCellEditingKey("");
+  };
+
+  const saveRowHandler = async (key) => {
+    try {
+      const row = await form.validateFields();
+      const rowData = row[key];
+      const newData = [...data];
+      const index = newData.findIndex((item) => key === item.key);
+      console.log(rowData);
+      if (index > -1) {
+        const item = newData[index];
+        newData.splice(index, 1, { ...item, ...rowData });
+        setData(newData);
+        setCellEditingKey("");
+      } else {
+        newData.push(rowData);
+        setData(newData);
+        setCellEditingKey("");
+      }
+    } catch (errInfo) {
+      console.log("Validate Failed:", errInfo);
+    }
+  };
 
   const onFillValuesFormTable = () => {
     const newObj = data.reduce((acc, curr) => {
@@ -23,8 +57,8 @@ const EditableTable = ({
     form.setFieldsValue(newObj);
   };
 
-  const onFinish = (value) => {
-    onFinishFormSubmit(data);
+  const onFinish = (values) => {
+    onFinishFormSubmit(values);
   };
 
   useEffect(() => {
@@ -34,6 +68,7 @@ const EditableTable = ({
   const addHandler = () => {
     const newData = [...data];
     const key = generateKey(data);
+    //Have not finish Handler add new row for singleEdit
     if (key) {
       setData([
         ...newData,
@@ -42,11 +77,11 @@ const EditableTable = ({
         },
       ]);
     }
+    
   };
 
   const saveHandler = (row) => {
     const { updatedRecord } = row;
-    console.log("row:", row);
     const newData = [...data];
     const index = newData.findIndex((item) => updatedRecord.key === item.key);
     const item = newData[index];
@@ -54,7 +89,74 @@ const EditableTable = ({
     setData(newData);
   };
 
-  const mergedColumns = columns.map((col) => {
+  const deleteHandler = (record) => {
+    const deletedRecordData = [...data].filter(
+      (item) => item.key !== record.key
+    );
+    setData(deletedRecordData);
+  };
+
+  const operation = {
+    key: "operation",
+    title: "operation",
+    dataIndex: "operation",
+    render: (_, record) => {
+      let renderType;
+      const editable = rowIsEditing(record);
+
+      const deleteComponent = (
+        <Popconfirm
+          title="Sure to delete?"
+          onConfirm={() => deleteHandler(record)}
+        >
+          <Typography.Link disabled={cellEditingKey !== ""}>
+            Delete
+          </Typography.Link>
+        </Popconfirm>
+      );
+
+      const editComponent = (
+        <Typography.Link
+          style={{ marginRight: "8px" }}
+          disabled={cellEditingKey !== ""}
+          onClick={() => rowEditHandler(record)}
+        >
+          Edit
+        </Typography.Link>
+      );
+
+      if (type === "single") {
+        renderType = editable ? (
+          <span>
+            <Typography.Link
+              onClick={() => saveRowHandler(record.key)}
+              style={{
+                marginRight: 8,
+              }}
+            >
+              Save
+            </Typography.Link>
+            <Popconfirm title="Sure to cancel?" onConfirm={onCancelEditRow}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : (
+          <Fragment>
+            {editComponent}
+            {deleteComponent}
+          </Fragment>
+        );
+      } else {
+        renderType = deleteComponent;
+      }
+
+      return <Fragment>{data.length >= 1 ? renderType : null}</Fragment>;
+    },
+  };
+
+  const isColumns = [...columns, operation];
+
+  const mergedColumns = isColumns.map((col) => {
     if (!col.editable) {
       return col;
     }
@@ -71,7 +173,8 @@ const EditableTable = ({
         options: col.options,
         valueChange: col.valueChange,
         onChange: col.onChange,
-        editable: col.editable,
+        editing: type === "single" ? rowIsEditing(record) : true,
+        type: type,
       }),
     };
   });
@@ -81,13 +184,13 @@ const EditableTable = ({
       {children}
       {addRow && (
         <div style={{ margin: "8px 0" }}>
-          <Button onClick={addHandler}>{title}</Button>
+          <Button onClick={addHandler}>{addRow?.title}</Button>
         </div>
       )}
       <Table
         components={components}
         columns={mergedColumns}
-        dataSource={data}
+        dataSource={data ? data : ""}
         rowKey={(record) => record.key}
       />
     </Form>

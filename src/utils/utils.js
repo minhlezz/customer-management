@@ -17,7 +17,7 @@ export const convertToArrayObj = (obj) => {
 
 export const generateKey = (values) => {
   const length = values.length;
-  const generatedKey = length + Math.floor(Math.random()*1000);
+  const generatedKey = length + Math.floor(Math.random()*10000)*length;
   for(let i in values) {
     if(values[i].key === generatedKey) {
       generateKey(values)

@@ -91,7 +91,7 @@ const Test = () => {
     {
       title: "address",
       dataIndex: "address",
-      width: "40%",
+      width: "30%",
       valueType: "input",
       editable: true,
     },
@@ -105,12 +105,38 @@ const Test = () => {
         dataSource={originData}
         components={components}
         onFinishFormSubmit={onFinishFormSubmit}
-        addRow={{
-          title: "Add New User",
+        single
+        editable={{
+          addRow: {
+            title: "Add New Row",
+          },
+          type: "multiple",
         }}
       >
         <div className="dflex justify-end">
-          <Button onClick={onSubmit} danger type="primary">Submit</Button>
+          <Button onClick={onSubmit} danger type="primary">
+            Submit
+          </Button>
+        </div>
+      </EditableTable>
+      <EditableTable
+        childRef={childRef}
+        columns={columns}
+        dataSource={originData}
+        components={components}
+        onFinishFormSubmit={onFinishFormSubmit}
+        single
+        editable={{
+          addRow: {
+            title: "Add New Row",
+          },
+          type: "single",
+        }}
+      >
+        <div className="dflex justify-end">
+          <Button onClick={onSubmit} danger type="primary">
+            Submit
+          </Button>
         </div>
       </EditableTable>
     </div>
