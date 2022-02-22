@@ -17,7 +17,7 @@ const EditableTable = ({
   const [data, setData] = useState(() => dataSource);
   const [cellEditingKey, setCellEditingKey] = useState("");
 
-  const rowIsEditing = (record) => record.key === cellEditingKey;
+  const rowIsEditing = (record) => record.key.toString() === cellEditingKey.toString();
 
   const rowEditHandler = (record) => {
     setCellEditingKey(record.key);
@@ -58,27 +58,42 @@ const EditableTable = ({
   };
 
   const onFinish = (values) => {
-    onFinishFormSubmit(values);
+    if(type === "multiple") {
+      onFinishFormSubmit(values);
+    }
+    if(type === "single") {
+      const value = [...data]
+      onFinishFormSubmit(value)
+    }
   };
 
   useEffect(() => {
     onFillValuesFormTable();
   }, []);
-
   const addHandler = () => {
     const newData = [...data];
     const key = generateKey(data);
     //Have not finish Handler add new row for singleEdit
-    if (key) {
-      setData([
-        ...newData,
-        {
-          key: key.toString(),
-        },
-      ]);
+    if (type === "single") {
+      if (key) {
+        setData([...newData, { key: key.toString() }]);
+        setCellEditingKey(key);
+      }
     }
-    
+
+    if (type === "multiple") {
+      if (key) {
+        setData([
+          ...newData,
+          {
+            key: key.toString(),
+          },
+        ]);
+      }
+    }
   };
+  console.log(cellEditingKey);
+  console.log(data);
 
   const saveHandler = (row) => {
     const { updatedRecord } = row;
@@ -137,7 +152,7 @@ const EditableTable = ({
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={onCancelEditRow}>
-              <a>Cancel</a>
+              <a href="#">Cancel</a>
             </Popconfirm>
           </span>
         ) : (

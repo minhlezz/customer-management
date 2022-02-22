@@ -28,7 +28,7 @@ const useFetchByID = (nameService, { id }) => {
       });
 
     return () => (isSubcribed = false);
-  }, [id]);
+  }, [id,nameService]);
   return [data, isLoading, errors];
 };
 

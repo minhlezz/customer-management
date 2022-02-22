@@ -110,26 +110,6 @@ const Test = () => {
           addRow: {
             title: "Add New Row",
           },
-          type: "multiple",
-        }}
-      >
-        <div className="dflex justify-end">
-          <Button onClick={onSubmit} danger type="primary">
-            Submit
-          </Button>
-        </div>
-      </EditableTable>
-      <EditableTable
-        childRef={childRef}
-        columns={columns}
-        dataSource={originData}
-        components={components}
-        onFinishFormSubmit={onFinishFormSubmit}
-        single
-        editable={{
-          addRow: {
-            title: "Add New Row",
-          },
           type: "single",
         }}
       >
