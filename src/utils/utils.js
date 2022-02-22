@@ -14,3 +14,15 @@ export const convertToArrayObj = (obj) => {
   }
   return result;
 };
+
+export const generateKey = (values) => {
+  const length = values.length;
+  const generatedKey = length + Math.floor(Math.random()*1000);
+  for(let i in values) {
+    if(values[i].key === generatedKey) {
+      generateKey(values)
+    }
+  }
+
+  return generatedKey;
+}

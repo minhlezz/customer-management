@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Form, Input, Select } from "antd";
 
 const EditableCell = ({
-  editing,
   dataIndex,
   title,
   valueType,
@@ -10,24 +9,44 @@ const EditableCell = ({
   index,
   children,
   options,
-  onSelectChange,
+  onChange,
   valueChange,
+  handleSave,
+  editable,
   form,
   ...restProps
 }) => {
 
-
-  const handleChange = (value) => {
-    onSelectChange({ value, form, record });
+  const save = async () => {
+    try {
+      const values = await form.validateFields();
+      const updateRecord = values[record.key];
+      handleSave({...values, updatedRecord: {
+        ...updateRecord,
+        key: record.key
+      }});
+    } catch (errInfo) {
+      console.log("Save failed:", errInfo);
+    }
   };
 
-  const selectComponent = <Select onChange={handleChange} options={options} />;
+  const handleChange = (value) => {
+    onChange({ value, form, record });
+  };
+  
 
-  const inputComponent = <Input />;
+  const selectComponent = (
+    <Select
+      onChange={handleChange}
+      options={options}
+      onBlur={save}
+    />
+  );
+  const inputComponent = <Input onPressEnter={save} onBlur={save} />;
 
   let childNode;
 
-  if (editing) {
+  if (editable) {
     switch (valueType) {
       case "select":
         childNode = selectComponent;
@@ -38,11 +57,13 @@ const EditableCell = ({
     }
   }
 
+  const keyString = record.key.toString();
+
   return (
     <td {...restProps}>
-      {editing ? (
+      {editable ? (
         <Form.Item
-          name={[record.key,dataIndex]}
+          name={[keyString, dataIndex]}
           style={{
             margin: 0,
           }}
