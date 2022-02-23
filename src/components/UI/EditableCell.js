@@ -4,6 +4,7 @@ import { Form, Input, Select } from "antd";
 const EditableCell = ({
   dataIndex,
   title,
+  disabled,
   type,
   valueType,
   record,
@@ -19,7 +20,7 @@ const EditableCell = ({
 }) => {
   const save = async () => {
     try {
-      const values = await form.validateFields();
+      const values = form.getFieldsValue();
       const updateRecord = values[record.key];
       handleSave({
         ...values,
@@ -44,7 +45,11 @@ const EditableCell = ({
       <Select onChange={handleChange} options={options} onBlur={save} />
     );
   const inputComponent =
-    type === "single" ? <Input /> : <Input onPressEnter={save} onBlur={save} />;
+    type === "single" ? (
+      <Input />
+    ) : (
+      <Input onPressEnter={save} onBlur={save} disabled={disabled} />
+    );
 
   let childNode;
 

@@ -28,8 +28,13 @@ const useFetchByID = (nameService, { id }) => {
       });
 
     return () => (isSubcribed = false);
-  }, [id,nameService]);
-  return [data, isLoading, errors];
+  }, [id, nameService]);
+
+  const updateData = (value) => {
+    setData(value);
+  };
+
+  return [data, isLoading, errors, updateData];
 };
 
 export default useFetchByID;

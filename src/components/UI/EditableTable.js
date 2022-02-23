@@ -1,23 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Form, Popconfirm, Table, Typography } from "antd";
 import { generateKey } from "../../utils/utils";
 import { Fragment } from "react/cjs/react.production.min";
+import EditableCell from "./EditableCell";
+
+const components = {
+  body: {
+    cell: EditableCell,
+  },
+};
 
 const EditableTable = ({
   columns,
-  dataSource,
-  components,
+  data,
   editable,
   children,
-  childRef,
-  onFinishFormSubmit,
+  formRef,
+  updateTable,
+  onRow,
 }) => {
   const { addRow, type } = editable;
   const [form] = Form.useForm();
-  const [data, setData] = useState(() => dataSource);
   const [cellEditingKey, setCellEditingKey] = useState("");
+  const [editingState, setEditingState] = useState(false);
 
-  const rowIsEditing = (record) => record.key.toString() === cellEditingKey.toString();
+  const rowIsEditing = (record) =>
+    record.key.toString() === cellEditingKey.toString();
 
   const rowEditHandler = (record) => {
     setCellEditingKey(record.key);
@@ -37,53 +45,40 @@ const EditableTable = ({
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...rowData });
-        setData(newData);
+        updateTable(newData);
         setCellEditingKey("");
       } else {
         newData.push(rowData);
-        setData(newData);
+        updateTable(newData);
         setCellEditingKey("");
       }
+      setEditingState(false);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
   };
 
-  const onFillValuesFormTable = () => {
-    const newObj = data.reduce((acc, curr) => {
-      acc[curr.key] = curr;
-      return acc;
-    }, {});
-    form.setFieldsValue(newObj);
-  };
+  const defaultValues = data?.reduce((acc, curr) => {
+    acc[curr.key] = curr;
+    return acc;
+  }, {});
 
-  const onFinish = (values) => {
-    if(type === "multiple") {
-      onFinishFormSubmit(values);
-    }
-    if(type === "single") {
-      const value = [...data]
-      onFinishFormSubmit(value)
-    }
-  };
-
-  useEffect(() => {
-    onFillValuesFormTable();
-  }, []);
   const addHandler = () => {
     const newData = [...data];
+
     const key = generateKey(data);
     //Have not finish Handler add new row for singleEdit
     if (type === "single") {
       if (key) {
-        setData([...newData, { key: key.toString() }]);
+        updateTable([...newData, { key: key.toString() }]);
         setCellEditingKey(key);
       }
+      setEditingState(true);
     }
 
     if (type === "multiple") {
       if (key) {
-        setData([
+        updateTable([
           ...newData,
           {
             key: key.toString(),
@@ -92,8 +87,6 @@ const EditableTable = ({
       }
     }
   };
-  console.log(cellEditingKey);
-  console.log(data);
 
   const saveHandler = (row) => {
     const { updatedRecord } = row;
@@ -101,14 +94,14 @@ const EditableTable = ({
     const index = newData.findIndex((item) => updatedRecord.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...updatedRecord });
-    setData(newData);
+    updateTable(newData);
   };
 
   const deleteHandler = (record) => {
     const deletedRecordData = [...data].filter(
       (item) => item.key !== record.key
     );
-    setData(deletedRecordData);
+    updateTable(deletedRecordData);
   };
 
   const operation = {
@@ -152,7 +145,7 @@ const EditableTable = ({
               Save
             </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={onCancelEditRow}>
-              <a href="#">Cancel</a>
+              <Typography.Link>Cancel</Typography.Link>
             </Popconfirm>
           </span>
         ) : (
@@ -180,6 +173,7 @@ const EditableTable = ({
       ...col,
       onCell: (record) => ({
         record,
+        disabled: col.disabled,
         valueType: col.valueType,
         dataIndex: col.dataIndex,
         title: col.title,
@@ -195,11 +189,18 @@ const EditableTable = ({
   });
 
   return (
-    <Form form={form} component={false} ref={childRef} onFinish={onFinish}>
+    <Form
+      form={form}
+      component={false}
+      ref={formRef}
+      initialValues={defaultValues}
+    >
       {children}
       {addRow && (
         <div style={{ margin: "8px 0" }}>
-          <Button onClick={addHandler}>{addRow?.title}</Button>
+          <Button onClick={addHandler} disabled={editingState}>
+            {addRow?.title}
+          </Button>
         </div>
       )}
       <Table
@@ -207,6 +208,7 @@ const EditableTable = ({
         columns={mergedColumns}
         dataSource={data ? data : ""}
         rowKey={(record) => record.key}
+        onRow={onRow}
       />
     </Form>
   );

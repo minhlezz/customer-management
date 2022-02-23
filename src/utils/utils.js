@@ -16,13 +16,22 @@ export const convertToArrayObj = (obj) => {
 };
 
 export const generateKey = (values) => {
+  let generatedKey;
   const length = values.length;
-  const generatedKey = length + Math.floor(Math.random()*10000)*length;
-  for(let i in values) {
-    if(values[i].key === generatedKey) {
-      generateKey(values)
+
+  if (values.length < 1 || values === undefined || values === null) {
+    generatedKey = Math.floor(Math.random() * 1000);
+  } else {
+    generatedKey = length + Math.floor(Math.random() * 10000) * length;
+  }
+
+  for (let i in values) {
+    if (values[i].key === generatedKey) {
+      generateKey(values);
     }
   }
 
+  console.log(generatedKey);
+
   return generatedKey;
-}
+};

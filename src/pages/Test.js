@@ -2,7 +2,6 @@ import { Button } from "antd";
 import React, { useRef } from "react";
 import EditableCell from "../components/UI/EditableCell";
 import EditableTable from "../components/UI/EditableTable";
-import { generateKey } from "../utils/utils";
 
 const selectOption = [
   { label: "lucy", value: "lucy" },
@@ -16,15 +15,6 @@ const areaOptions = [
 ];
 
 const originData = [];
-for (let i = 0; i < 4; i++) {
-  originData.push({
-    key: generateKey(originData),
-    name: `Edrward ${i}`,
-    age: 32,
-    area: `Area ${i}`,
-    address: `London Park no. ${i}`,
-  });
-}
 
 const Test = () => {
   const childRef = useRef(null);
@@ -111,6 +101,26 @@ const Test = () => {
             title: "Add New Row",
           },
           type: "single",
+        }}
+      >
+        <div className="dflex justify-end">
+          <Button onClick={onSubmit} danger type="primary">
+            Submit
+          </Button>
+        </div>
+      </EditableTable>
+
+      <EditableTable
+        formRef={childRef}
+        columns={columns}
+        dataSource={originData}
+        components={components}
+        onFinishFormSubmit={onFinishFormSubmit}
+        editable={{
+          addRow: {
+            title: "Add New Row",
+          },
+          type: "multiple",
         }}
       >
         <div className="dflex justify-end">
