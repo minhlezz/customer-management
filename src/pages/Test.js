@@ -1,7 +1,5 @@
-import { Button } from "antd";
-import React, { useRef } from "react";
-import EditableCell from "../components/UI/EditableCell";
-import EditableTable from "../components/UI/EditableTable";
+import React, { useState } from "react";
+import EditableTable from "../components/EditableTable";
 
 const selectOption = [
   { label: "lucy", value: "lucy" },
@@ -16,67 +14,30 @@ const areaOptions = [
 
 const originData = [];
 
+for (let i = 0; i < 5; i++) {
+  originData.push({
+    key: i.toString(),
+    name: `Edrward ${i}`,
+    age: 32,
+    address: `London Park no. ${i}`,
+  });
+}
+
 const Test = () => {
-  const childRef = useRef(null);
-  const selectChangeHandler = ({ value, form, record }) => {
-    console.log(value);
-  };
-
-  const areaSelectHandler = ({ value, form, record }) => {
-    console.log(record);
-    if (value === "BH") {
-      form.setFieldsValue({
-        [record.key]: {
-          area: value,
-          address: "30 jump street",
-        },
-      });
-    }
-  };
-
-  const onFinishFormSubmit = (values) => {
-    console.log(values);
-  };
-
-  const onSubmit = async () => {
-    await childRef.current.validateFields();
-    childRef.current.submit();
-  };
-
-  const components = {
-    body: {
-      cell: EditableCell,
-    },
-  };
+  const [data, setData] = useState(originData);
 
   const columns = [
     {
       title: "name",
       dataIndex: "name",
       width: "25%",
-      valueType: "select",
       editable: true,
-      options: selectOption,
-      onChange: ({ value, form, record }) => {
-        selectChangeHandler({ value, form, record });
-      },
     },
     {
       title: "age",
       dataIndex: "age",
       width: "15%",
-      valueType: "input",
       editable: true,
-    },
-    {
-      title: "Area",
-      dataIndex: "area",
-      valueType: "select",
-      editable: true,
-      options: areaOptions,
-      onChange: ({ value, form, record }) => {
-        areaSelectHandler({ value, form, record });
-      },
     },
     {
       title: "address",
@@ -90,45 +51,11 @@ const Test = () => {
   return (
     <div className="margin-25">
       <EditableTable
-        childRef={childRef}
         columns={columns}
-        dataSource={originData}
-        components={components}
-        onFinishFormSubmit={onFinishFormSubmit}
-        single
-        editable={{
-          addRow: {
-            title: "Add New Row",
-          },
-          type: "single",
-        }}
-      >
-        <div className="dflex justify-end">
-          <Button onClick={onSubmit} danger type="primary">
-            Submit
-          </Button>
-        </div>
-      </EditableTable>
-
-      <EditableTable
-        formRef={childRef}
-        columns={columns}
-        dataSource={originData}
-        components={components}
-        onFinishFormSubmit={onFinishFormSubmit}
-        editable={{
-          addRow: {
-            title: "Add New Row",
-          },
-          type: "multiple",
-        }}
-      >
-        <div className="dflex justify-end">
-          <Button onClick={onSubmit} danger type="primary">
-            Submit
-          </Button>
-        </div>
-      </EditableTable>
+        dataSource={data}
+        onChange={(values) => setData(values)}
+        addNewButtonText="Add new Test"
+      />
     </div>
   );
 };
