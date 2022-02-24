@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Button, Spin } from "antd";
 import Title from "antd/lib/typography/Title";
 import { useHistory, useParams } from "react-router-dom";
@@ -12,19 +12,11 @@ const OrderDetail = () => {
   const params = useParams();
   const id = params.orderId;
   const formRef = useRef(null);
-  const [formDirty, setFormDirty] = useState(false);
 
   const [order, loading, error, setOrder] = useFetchByID("orders", {
     id,
   });
   const [products, productLoading, productErros] = useFetch("products");
-
-  useEffect(() => {
-    if (formRef.current) {
-      const dirty = formRef.current?.isFieldsTouched();
-      setFormDirty(dirty);
-    }
-  }, [formRef?.current?.isFieldsTouched()]);
 
   if (loading || productLoading) return <Spin />;
   if (error || productErros) return <p>{error || productErros}</p>;
@@ -140,12 +132,7 @@ const OrderDetail = () => {
         }}
       >
         <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
-          <Button
-            danger
-            type="primary"
-            onClick={saveHandler}
-            disabled={!formDirty}
-          >
+          <Button danger type="primary" onClick={saveHandler}>
             Save
           </Button>
         </div>

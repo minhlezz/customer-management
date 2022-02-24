@@ -1,16 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { Select } from "antd";
 import EditableTable from "../components/EditableTable";
-
-const selectOption = [
-  { label: "lucy", value: "lucy" },
-  { label: "david", value: "david" },
-  { label: "rose", value: "rose" },
-];
-const areaOptions = [
-  { label: "BH", value: "BH" },
-  { label: "Q1", value: "Q1" },
-  { label: "BT", value: "BT" },
-];
 
 const originData = [];
 
@@ -25,6 +15,7 @@ for (let i = 0; i < 5; i++) {
 
 const Test = () => {
   const [data, setData] = useState(originData);
+  const formRef = useRef(null);
 
   const columns = [
     {
@@ -32,6 +23,21 @@ const Test = () => {
       dataIndex: "name",
       width: "25%",
       editable: true,
+      renderFormInput: (form, recordKey) => {
+        return (
+          <Select
+            options={[
+              { label: "Halland", value: "Halland" },
+              { label: "Smith", value: "Smith" },
+            ]}
+            onChange={(value) => {
+              console.log(value);
+              let age = value === 2 ? 10 : 100;
+              form.setFieldsValue({ [recordKey]: { age } });
+            }}
+          />
+        );
+      },
     },
     {
       title: "age",
@@ -55,6 +61,8 @@ const Test = () => {
         dataSource={data}
         onChange={(values) => setData(values)}
         addNewButtonText="Add new Test"
+        type={"multiple"}
+        formRef={formRef}
       />
     </div>
   );
