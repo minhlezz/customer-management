@@ -1,21 +1,30 @@
 import React, { useRef, useState } from "react";
-import { Select } from "antd";
+import { Button, Select } from "antd";
 import EditableTable from "../components/EditableTable";
 
 const originData = [];
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < 20; i++) {
   originData.push({
-    key: i.toString(),
-    name: `Edrward ${i}`,
-    age: 32,
-    address: `London Park no. ${i}`,
+    key: Math.floor(Math.random() * 1000 * i),
+    name: `Test ${i}`,
+    age: `age ${i}`,
+    address: `Addess ${i} street`,
   });
 }
 
 const Test = () => {
   const [data, setData] = useState(originData);
   const formRef = useRef(null);
+
+  console.log(data);
+
+  const checkoutHandler = async () => {
+    const form = formRef.current;
+    await form.validateFields();
+    const formValues = form.getFieldsValue();
+    console.log(formValues);
+  };
 
   const columns = [
     {
@@ -31,9 +40,15 @@ const Test = () => {
               { label: "Smith", value: "Smith" },
             ]}
             onChange={(value) => {
-              console.log(value);
-              let age = value === 2 ? 10 : 100;
-              form.setFieldsValue({ [recordKey]: { age } });
+              if (value === "Halland") {
+                form.setFieldsValue({ [recordKey]: { age: 100 } });
+              } else {
+                form.setFieldsValue({
+                  [recordKey]: {
+                    age: 10,
+                  },
+                });
+              }
             }}
           />
         );
@@ -59,11 +74,15 @@ const Test = () => {
       <EditableTable
         columns={columns}
         dataSource={data}
-        onChange={(values) => setData(values)}
+        onChange={(changedValues) => setData(changedValues)}
         addNewButtonText="Add new Test"
         type={"multiple"}
         formRef={formRef}
-      />
+      >
+        <Button danger onClick={checkoutHandler}>
+          Checkout
+        </Button>
+      </EditableTable>
     </div>
   );
 };

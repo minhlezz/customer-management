@@ -4,11 +4,11 @@ import Cell from "./Cell";
 import useEditableTable from "./useEditableTable";
 
 const EditableTable = (props) => {
-  const { data, mergedColumns, formProps, addNewButton, formRef } =
+  const { data, mergedColumns, formProps, addNewButton } =
     useEditableTable(props);
-
   return (
-    <Form {...formProps} formRef={formRef}>
+    <Form {...formProps}>
+      {props.children}
       {addNewButton}
       <Table
         bordered

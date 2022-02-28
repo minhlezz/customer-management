@@ -46,15 +46,22 @@ const Order = () => {
 
   const checkOutHandler = async () => {
     const form = formRef.current;
-    await form.validateFields();
-    const newOrder = {
-      customerId: order.customer.id,
-      products: order.products,
-    };
-    orderService.create("orders", newOrder).catch((err) => {
-      console.log(err);
-    });
-    history.push("/customer");
+    if (form) {
+      try {
+        await form.validateFields();
+        const newOrder = {
+          customerId: order.customer.id,
+          products: order.products,
+        };
+
+        orderService.create("orders", newOrder).catch((err) => {
+          console.log(err);
+        });
+        history.push("/customer");
+      } catch (err) {
+        alert(err);
+      }
+    }
   };
 
   const updateOrderProducts = (values) => {

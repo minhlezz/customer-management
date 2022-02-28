@@ -1,19 +1,25 @@
-import React, { useRef } from "react";
-import { Button, Spin } from "antd";
+import React, { useRef, useState } from "react";
+import { Button, InputNumber, Select, Spin } from "antd";
 import Title from "antd/lib/typography/Title";
 import { useHistory, useParams } from "react-router-dom";
-import EditableTable from "../components/UI/EditableTable";
+import EditableTable from "../components/EditableTable/";
 import useFetchByID from "../hooks/useFetchByID";
 import { toFormatDate } from "../utils/utils";
 import useFetch from "../hooks/useFetch";
+
+const initOrder = {
+  customerId: "",
+  products: [],
+};
 
 const OrderDetail = () => {
   const history = useHistory();
   const params = useParams();
   const id = params.orderId;
   const formRef = useRef(null);
+  const [orderDetail, setOrderDetail] = useState(initOrder);
 
-  const [order, loading, error, setOrder] = useFetchByID("orders", {
+  const [order, loading, error] = useFetchByID("orders", {
     id,
   });
   const [products, productLoading, productErros] = useFetch("products");
@@ -24,13 +30,13 @@ const OrderDetail = () => {
   const { createdAt } = order;
 
   const productSelectChangeHandler = ({ value, form, record }) => {
-    const isProduct = products.find((item) => item.productName === value);
-    if (isProduct) {
+    const selectedProduct = products.find((item) => item.productName === value);
+    if (selectedProduct) {
       form.setFieldsValue({
         [record.key]: {
-          productPrice: isProduct.productPrice,
+          productPrice: selectedProduct.productPrice,
           productQuantity: 1,
-          productId: isProduct.id,
+          productId: selectedProduct.id,
         },
       });
     }
@@ -41,33 +47,28 @@ const OrderDetail = () => {
       ...order,
       products: values,
     };
-    setOrder(newObj);
+    setOrderDetail(newObj);
   };
 
   const saveHandler = async () => {
-    console.log("save");
-    console.log(order);
-    const form = formRef?.current;
-    if (form) {
-      await form.validateFields();
-      form.submit();
-    }
+    const form = formRef.current;
+    await form.validateFields();
+
+    const updatedOrder = {
+      customerId: orderDetail.customerId,
+      products: orderDetail.products,
+    };
+    console.log(form);
+    console.log(form.getFieldsValue());
   };
 
   const doubleClickHanlder = (record) => {
-    const newPath = `/product/${record.productId}`;
-    history.push(newPath);
+    if (record.id) {
+      const newPath = `/product/${record.id}`;
+      history.push(newPath);
+    }
+    return;
   };
-
-  const productDatasource = order.products.map((item, index) => {
-    return {
-      key: index,
-      productName: item.productName,
-      productPrice: item.productPrice,
-      productQuantity: item.productQuantity,
-      productId: item.productId,
-    };
-  });
 
   const productOptions = products.map((product) => {
     return {
@@ -81,29 +82,71 @@ const OrderDetail = () => {
       title: "Product",
       dataIndex: "productName",
       width: "20%",
-      valueType: "select",
       editable: true,
-      options: productOptions,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please input Product",
+          },
+        ],
+      },
       onChange: productSelectChangeHandler,
+      renderFormInput: (form, recordKey) => {
+        return (
+          <Select
+            options={productOptions}
+            onChange={(value) => {
+              console.log(value);
+            }}
+          />
+        );
+      },
     },
     {
       title: "Price",
       dataIndex: "productPrice",
-      valueType: "input",
       editable: true,
+      inputType: InputNumber,
+      inputProps: { min: 0 },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please Select Product",
+          },
+        ],
+      },
     },
     {
       title: "Quantity",
       dataIndex: "productQuantity",
-      valueType: "input",
       editable: true,
+      inputType: InputNumber,
+      inputProps: { min: 0 },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please input Quantity",
+          },
+        ],
+      },
     },
     {
       title: "ID",
-      dataIndex: "productId",
+      dataIndex: "id",
       valueType: "input",
       editable: true,
-      disabled: true,
+      inputProps: { disabled: true },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please input ID",
+          },
+        ],
+      },
     },
   ];
 
@@ -114,15 +157,13 @@ const OrderDetail = () => {
       </Title>
       <EditableTable
         formRef={formRef}
-        data={productDatasource}
-        updateTable={updateHandler}
+        dataSource={order.products}
         columns={columns}
-        editable={{
-          addRow: {
-            title: "Add More Products",
-          },
-          type: "multiple",
+        addNewButtonText="Add More Order"
+        onChange={(values) => {
+          updateHandler(values);
         }}
+        type={"multiple"}
         onRow={(record) => {
           return {
             onDoubleClick: () => {
@@ -132,7 +173,12 @@ const OrderDetail = () => {
         }}
       >
         <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
-          <Button danger type="primary" onClick={saveHandler}>
+          <Button
+            danger
+            type="primary"
+            onClick={saveHandler}
+            disabled={!formRef?.current?.isFieldsTouched()}
+          >
             Save
           </Button>
         </div>

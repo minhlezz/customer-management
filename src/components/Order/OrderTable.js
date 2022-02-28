@@ -1,21 +1,9 @@
+import { InputNumber, Select } from "antd";
 import React from "react";
-import EditableTable from "../UI/EditableTable";
+import EditableTable from "../EditableTable/";
 
 const OrderTable = (props) => {
   const { products, formRef, orderProducts, updateOrderProducts } = props;
-
-  const productSelectChangeHandler = ({ value, form, record }) => {
-    const isProduct = products.find((item) => item.productName === value);
-    if (isProduct) {
-      form.setFieldsValue({
-        [record.key]: {
-          productPrice: isProduct.productPrice,
-          productQuantity: 1,
-          productId: isProduct.id,
-        },
-      });
-    }
-  };
 
   const productOptions = products.map((product) => {
     return {
@@ -29,31 +17,67 @@ const OrderTable = (props) => {
       title: "Product",
       dataIndex: "productName",
       width: "20%",
-      valueType: "select",
       editable: true,
-      options: productOptions,
-      onChange: ({ value, form, record }) => {
-        productSelectChangeHandler({ value, form, record });
+      renderFormInput: (form, recordKey, updateOtherValues) => {
+        return (
+          <Select
+            options={productOptions}
+            onChange={(value) => {
+              const selectedProduct = products.find(
+                (item) => item.productName === value
+              );
+
+              if (selectedProduct) {
+                const newData = [...orderProducts];
+                const index = newData.findIndex(
+                  (item) => item.key === recordKey
+                );
+                const newItem = {
+                  ...selectedProduct,
+                  productQuantity: 1,
+                  key: recordKey,
+                };
+
+                const updatedData = {
+                  [recordKey]: newItem,
+                };
+
+                updateOtherValues(updatedData);
+
+                if (index > -1) {
+                  const item = newData[index];
+                  newData.splice(index, 1, { ...item, ...newItem });
+                  updateOrderProducts(newData);
+                } else {
+                  newData.push(newItem);
+                  updateOrderProducts(newData);
+                }
+              }
+            }}
+          />
+        );
       },
     },
     {
       title: "Price",
       dataIndex: "productPrice",
-      valueType: "input",
       editable: true,
+      inputType: InputNumber,
+      inputProps: { min: 0 },
     },
     {
       title: "Quantity",
       dataIndex: "productQuantity",
-      valueType: "input",
       editable: true,
+      inputType: InputNumber,
+      inputProps: { min: 0 },
     },
     {
       title: "ID",
-      dataIndex: "productId",
+      dataIndex: "id",
       valueType: "input",
       editable: true,
-      disabled: true,
+      inputProps: { disabled: true },
     },
   ];
 
@@ -61,14 +85,12 @@ const OrderTable = (props) => {
     <EditableTable
       formRef={formRef}
       columns={columns}
-      editable={{
-        addRow: {
-          title: "Add New Row",
-        },
-        type: "multiple",
+      dataSource={orderProducts}
+      onChange={(values) => {
+        updateOrderProducts(values);
       }}
-      data={orderProducts}
-      updateTable={updateOrderProducts}
+      addNewButtonText="Add new Order"
+      type={"multiple"}
     >
       {props.children}
     </EditableTable>

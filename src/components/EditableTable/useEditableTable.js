@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Button, Form, Popconfirm, Typography } from "antd";
+import { convertToArrayObj } from "../../utils/utils";
 
 const useOperation = ({
   deleteHandler,
@@ -85,6 +86,7 @@ const useColumns = ({
   cancelHandler,
   editHandler,
   type,
+  formValuesChangeHandler,
 }) => {
   const editingKeyMode = type === "single" ? editingSingleKey : editingKey;
   const isEditing = (record) => editingKeyMode.includes(record.key);
@@ -118,6 +120,7 @@ const useColumns = ({
         formItemProps: col.formItemProps,
         editing: isEditing(record),
         type: type,
+        formValuesChangeHandler,
       }),
     };
   });
@@ -133,27 +136,30 @@ const useChangingStateAction = ({ dataSource, onChange, form, type }) => {
   const [editStatus, setEditStatus] = useState(false);
 
   const addHandler = () => {
-    const newKey = Date.now();
+    const newKey = Math.floor(Date.now() * Math.random() * 1000);
     setData([...data, { key: newKey }]);
 
     if (type === "single") {
-      setEditingSingleKey([newKey]);
+      setEditingKey([newKey]);
       setEditStatus(true);
-    } else if (type === "multiple") {
+    }
+
+    if (type === "multiple") {
       setEditingKey([...editingKey, newKey]);
     }
   };
 
-  const formValuesChangeHandler = (changedValues) => {
-    const newDataSource = dataSource.map((row) => {
-      const currenKey = Object.keys(changedValues)[0];
-      if (row.key === currenKey) {
-        const changedData = changedValues[currenKey];
-        return { ...row, ...changedData };
+  const formValuesChangeHandler = (changedValues, values) => {
+    const newData = dataSource.map((item) => {
+      const currentKey = Object.keys(changedValues)[0];
+      console.log(currentKey);
+      if (item.key.toString() === currentKey.toString()) {
+        const changedData = changedValues[currentKey];
+        return { ...item, ...changedData };
       }
-      return row;
+      return item;
     });
-    onChange(newDataSource);
+    onChange(newData);
   };
 
   const deleteHandler = (record) => {
@@ -213,9 +219,9 @@ const useEditableTable = ({
   onChange,
   addNewButtonText,
   type,
+  formRef,
 }) => {
   const [form] = Form.useForm();
-
   const {
     data,
     editingKey,
@@ -234,11 +240,17 @@ const useEditableTable = ({
     type,
   });
 
+  const defaultValues = dataSource?.reduce((acc, curr) => {
+    acc[curr.key] = curr;
+    return acc;
+  }, {});
+
   const formProps = {
     form,
     component: false,
-    initialValues: dataSource,
-    onValuesChange: (changedValue, values) => {
+    initialValues: defaultValues,
+    ref: formRef,
+    onValuesChange: (changedValue) => {
       formValuesChangeHandler(changedValue);
     },
   };
@@ -253,6 +265,7 @@ const useEditableTable = ({
     cancelHandler,
     editingSingleKey,
     type,
+    formValuesChangeHandler,
   });
 
   const addNewButton = (

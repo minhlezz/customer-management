@@ -35,3 +35,19 @@ export const generateKey = (values) => {
 
   return generatedKey;
 };
+
+export const validateForm = (formValues) => {
+  for (let key in formValues) {
+    for (let nestedKey in formValues[key]) {
+      const nestedElement = formValues[key][nestedKey];
+      if (
+        nestedElement === undefined ||
+        nestedElement === "" ||
+        nestedElement === null
+      ) {
+        throw Error(`Value ${nestedKey} is undefined`);
+      }
+    }
+  }
+  return true;
+};

@@ -19,7 +19,7 @@ const ProductDetail = () => {
   return (
     <div className="margin-25">
       {product && (
-        <Descriptions title={`Product Information - ${params.productId}`}>
+        <Descriptions title={`Product Information ${params.productId}`}>
           <Descriptions.Item label="Product">
             {productName}
           </Descriptions.Item>
