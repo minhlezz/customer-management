@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Button, Form, Popconfirm, Typography } from "antd";
 import { convertToArrayObj } from "../../utils/utils";
 
@@ -128,12 +128,16 @@ const useColumns = ({
 };
 
 const useChangingStateAction = ({ dataSource, onChange, form, type }) => {
-  const [data, setData] = useState(dataSource);
+  const [data, setData] = useState(() => dataSource);
   const [editingSingleKey, setEditingSingleKey] = useState("");
   const [editingKey, setEditingKey] = useState(
     dataSource.map(({ key }) => key)
   );
   const [editStatus, setEditStatus] = useState(false);
+
+  useEffect(() => {
+    setData(dataSource);
+  }, [dataSource]);
 
   const addHandler = () => {
     const newKey = Math.floor(Date.now() * Math.random() * 1000);
@@ -148,18 +152,22 @@ const useChangingStateAction = ({ dataSource, onChange, form, type }) => {
       setEditingKey([...editingKey, newKey]);
     }
   };
-
-  const formValuesChangeHandler = (changedValues, values) => {
-    const newData = dataSource.map((item) => {
+  const updatingRecordData = (changedValues) => {
+    const newData = data.map((item) => {
       const currentKey = Object.keys(changedValues)[0];
-      console.log(currentKey);
       if (item.key.toString() === currentKey.toString()) {
         const changedData = changedValues[currentKey];
         return { ...item, ...changedData };
       }
       return item;
     });
-    onChange(newData);
+    return newData;
+  };
+
+  const formValuesChangeHandler = (changedValues, values) => {
+    const updatedData = updatingRecordData(changedValues);
+    setData(updatedData);
+    onChange(updatedData);
   };
 
   const deleteHandler = (record) => {
@@ -177,6 +185,19 @@ const useChangingStateAction = ({ dataSource, onChange, form, type }) => {
     setEditingSingleKey("");
   };
 
+  const updatedExistingItem = ({ newData, rowData, index }) => {
+    const existingItem = newData[index];
+    newData.splice(index, 1, { ...existingItem, ...rowData });
+    setData(newData);
+    setEditingSingleKey("");
+  };
+
+  const addNewItem = ({ newData, rowData }) => {
+    newData.push(rowData);
+    setData(newData);
+    setEditingSingleKey("");
+  };
+
   const saveRowHandler = async (key) => {
     try {
       const row = await form.validateFields();
@@ -184,14 +205,9 @@ const useChangingStateAction = ({ dataSource, onChange, form, type }) => {
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
       if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...rowData });
-        setData(newData);
-        setEditingSingleKey("");
+        updatedExistingItem({ newData, rowData, index });
       } else {
-        newData.push(rowData);
-        setData(newData);
-        setEditingSingleKey("");
+        addNewItem({ newData, rowData });
       }
       setEditStatus(false);
     } catch (errInfo) {

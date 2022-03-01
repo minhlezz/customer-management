@@ -1,16 +1,10 @@
 import { InputNumber, Select } from "antd";
 import React from "react";
 import EditableTable from "../EditableTable/";
+import ProductSelector from "../OrderDetail.js/ProductSelector";
 
 const OrderTable = (props) => {
   const { products, formRef, orderProducts, updateOrderProducts } = props;
-
-  const productOptions = products.map((product) => {
-    return {
-      label: product.productName,
-      value: product.productName,
-    };
-  });
 
   const columns = [
     {
@@ -18,42 +12,20 @@ const OrderTable = (props) => {
       dataIndex: "productName",
       width: "20%",
       editable: true,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please Select Product",
+          },
+        ],
+      },
       renderFormInput: (form, recordKey, updateOtherValues) => {
         return (
-          <Select
-            options={productOptions}
-            onChange={(value) => {
-              const selectedProduct = products.find(
-                (item) => item.productName === value
-              );
-
-              if (selectedProduct) {
-                const newData = [...orderProducts];
-                const index = newData.findIndex(
-                  (item) => item.key === recordKey
-                );
-                const newItem = {
-                  ...selectedProduct,
-                  productQuantity: 1,
-                  key: recordKey,
-                };
-
-                const updatedData = {
-                  [recordKey]: newItem,
-                };
-
-                updateOtherValues(updatedData);
-
-                if (index > -1) {
-                  const item = newData[index];
-                  newData.splice(index, 1, { ...item, ...newItem });
-                  updateOrderProducts(newData);
-                } else {
-                  newData.push(newItem);
-                  updateOrderProducts(newData);
-                }
-              }
-            }}
+          <ProductSelector
+            data={products}
+            recordKey={recordKey}
+            updateOtherValues={updateOtherValues}
           />
         );
       },
@@ -64,6 +36,14 @@ const OrderTable = (props) => {
       editable: true,
       inputType: InputNumber,
       inputProps: { min: 0 },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please Select Price",
+          },
+        ],
+      },
     },
     {
       title: "Quantity",
@@ -71,6 +51,14 @@ const OrderTable = (props) => {
       editable: true,
       inputType: InputNumber,
       inputProps: { min: 0 },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please Select Quantity",
+          },
+        ],
+      },
     },
     {
       title: "ID",
@@ -78,6 +66,14 @@ const OrderTable = (props) => {
       valueType: "input",
       editable: true,
       inputProps: { disabled: true },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please Select ID",
+          },
+        ],
+      },
     },
   ];
 

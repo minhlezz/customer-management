@@ -4,10 +4,39 @@ import { Button, Col, Form, Input, Row, Typography } from "antd";
 const { Title } = Typography;
 
 const formLayout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 8 },
+  wrapperCol: { span: 12 },
   labelAlign: "left",
 };
+
+const customerProps = [
+  {
+    name: "firstName",
+    label: "First Name",
+    valid: { required: true, message: "Please input your First Name!" },
+  },
+
+  {
+    name: "lastName",
+    label: "Last Name",
+    valid: { required: true, message: "Please input your Last Name!" },
+  },
+  {
+    name: "address",
+    label: "Address",
+    valid: { required: true, message: "Please input your Address !" },
+  },
+  {
+    name: "email",
+    label: "Email",
+    valid: { required: true, message: "Please input your Email !" },
+  },
+  {
+    name: "phoneNumber",
+    label: "Phone Number",
+    valid: { required: true, message: "Please input your Phone Number!" },
+  },
+];
 
 const CustomerForm = (props) => {
   const [form] = Form.useForm();
@@ -20,6 +49,19 @@ const CustomerForm = (props) => {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  const customerFormItem = customerProps.map((element, index) => {
+    return (
+      <Form.Item
+        key={index}
+        name={element.name}
+        label={element.label}
+        rules={[element.valid]}
+      >
+        <Input placeholder={`Enter your ${element.label}...`} />
+      </Form.Item>
+    );
+  });
 
   return (
     <Form
@@ -40,53 +82,9 @@ const CustomerForm = (props) => {
           </Button>
         </Form.Item>
       </div>
-      <Row gutter={24} className="bg-white" style={{ padding: "15px" }}>
-        <Col span={12}>
-          <Form.Item
-            name="firstName"
-            label="First Name"
-            rules={[
-              { required: true, message: "Please input your First Name!" },
-            ]}
-          >
-            <Input placeholder="Enter your first name...." />
-          </Form.Item>
-          <Form.Item
-            name="lastName"
-            label="Last Name"
-            rules={[
-              { required: true, message: "Please input your Last Name!" },
-            ]}
-          >
-            <Input placeholder="Enter your last name...." />
-          </Form.Item>
-          <Form.Item
-            name="address"
-            label="Address"
-            rules={[{ required: true, message: "Please input your Address !" }]}
-          >
-            <Input placeholder="Enter your address...." />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[{ required: true, message: "Please input your Email !" }]}
-          >
-            <Input placeholder="Enter your email...." />
-          </Form.Item>
-          <Form.Item
-            name="phoneNumber"
-            label="Phone Number"
-            rules={[
-              { required: true, message: "Please input your Phone Number!" },
-            ]}
-          >
-            <Input placeholder="Enter your phone number...." />
-          </Form.Item>
-        </Col>
-      </Row>
+      <div className="bg-white" style={{ padding: "15px" }}>
+        {customerFormItem}
+      </div>
     </Form>
   );
 };

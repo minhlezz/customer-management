@@ -11,7 +11,7 @@ const tailLayout = {
 };
 
 const OrderForm = (props) => {
-  const { customer, products, selectedCustomer } = props;
+  const { products, selectedCustomer } = props;
   const [form] = Form.useForm();
 
   const onFinish = (values) => {

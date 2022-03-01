@@ -1,11 +1,14 @@
 import React, { useRef, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Button, InputNumber, Select, Spin } from "antd";
 import Title from "antd/lib/typography/Title";
-import { useHistory, useParams } from "react-router-dom";
+
 import EditableTable from "../components/EditableTable/";
-import useFetchByID from "../hooks/useFetchByID";
 import { toFormatDate } from "../utils/utils";
+import * as orderDetailService from "../firebase/firebase.service";
+import useFetchByID from "../hooks/useFetchByID";
 import useFetch from "../hooks/useFetch";
+import ProductSelector from "../components/OrderDetail.js/ProductSelector";
 
 const initOrder = {
   customerId: "",
@@ -29,19 +32,6 @@ const OrderDetail = () => {
 
   const { createdAt } = order;
 
-  const productSelectChangeHandler = ({ value, form, record }) => {
-    const selectedProduct = products.find((item) => item.productName === value);
-    if (selectedProduct) {
-      form.setFieldsValue({
-        [record.key]: {
-          productPrice: selectedProduct.productPrice,
-          productQuantity: 1,
-          productId: selectedProduct.id,
-        },
-      });
-    }
-  };
-
   const updateHandler = (values) => {
     const newObj = {
       ...order,
@@ -54,12 +44,25 @@ const OrderDetail = () => {
     const form = formRef.current;
     await form.validateFields();
 
-    const updatedOrder = {
-      customerId: orderDetail.customerId,
-      products: orderDetail.products,
+    const { customerId, createdAt, products } = orderDetail;
+
+    const options = {
+      id,
+      service: "orders",
+      value: {
+        customerId,
+        createdAt,
+        products,
+      },
     };
-    console.log(form);
-    console.log(form.getFieldsValue());
+    orderDetailService
+      .updateById(options)
+      .then(() => {
+        console.log("success");
+      })
+      .catch((err) => console.error(err));
+
+    history.goBack();
   };
 
   const doubleClickHanlder = (record) => {
@@ -70,18 +73,10 @@ const OrderDetail = () => {
     return;
   };
 
-  const productOptions = products.map((product) => {
-    return {
-      label: product.productName,
-      value: product.productName,
-    };
-  });
-
   const columns = [
     {
       title: "Product",
       dataIndex: "productName",
-      width: "20%",
       editable: true,
       formItemProps: {
         rules: [
@@ -91,17 +86,13 @@ const OrderDetail = () => {
           },
         ],
       },
-      onChange: productSelectChangeHandler,
-      renderFormInput: (form, recordKey) => {
-        return (
-          <Select
-            options={productOptions}
-            onChange={(value) => {
-              console.log(value);
-            }}
-          />
-        );
-      },
+      renderFormInput: (form, recordKey, updateOtherValues) => (
+        <ProductSelector
+          data={products}
+          recordKey={recordKey}
+          updateOtherValues={updateOtherValues}
+        />
+      ),
     },
     {
       title: "Price",
@@ -144,6 +135,21 @@ const OrderDetail = () => {
           {
             required: true,
             message: "Please input ID",
+          },
+        ],
+      },
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      valueType: "input",
+      editable: true,
+      inputProps: { disabled: true },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please input created time",
           },
         ],
       },

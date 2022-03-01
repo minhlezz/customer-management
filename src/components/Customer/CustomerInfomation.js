@@ -21,18 +21,16 @@ const CustomerInfomation = (props) => {
   };
 
   const updateCustomerHandler = (values) => {
-    const newCustomer = {
-      ...customer,
-      ...values,
-      phoneNumber: +values.phoneNumber,
-    };
-
     const options = {
       id,
       service: "customers",
-      value: newCustomer,
+      value: {
+        ...customer,
+        ...values,
+        phoneNumber: +values.phoneNumber,
+      },
     };
-    
+
     customerService
       .updateById(options)
       .then(() => {

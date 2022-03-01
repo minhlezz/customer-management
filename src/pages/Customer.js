@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button, Spin, Table } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import Title from "antd/lib/typography/Title";
-
-import * as customerService from "../firebase/firebase.service";
+import useFetch from "../hooks/useFetch";
 
 const columns = [
   { title: "ID", dataIndex: "id", key: "id" },
@@ -16,46 +15,8 @@ const columns = [
 ];
 
 const Customer = () => {
-  const [customers, setCustomers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState();
-
   const history = useHistory();
-
-  const fetchCustomer = (isSubcribed) => {
-    let result = [];
-    customerService
-      .findAll("customers")
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const values = snapshot.val();
-          for (let key in values) {
-            result.push({
-              id: key,
-              ...values[key],
-            });
-          }
-          if (isSubcribed) {
-            setCustomers(result);
-          }
-          setIsLoading(false);
-        } else {
-          console.log("No data available");
-          setIsLoading(false);
-        }
-      })
-      .catch((error) => {
-        setErrors(error);
-      });
-  };
-
-  useEffect(() => {
-    let isSubcribed = true;
-
-    fetchCustomer(isSubcribed);
-
-    return () => (isSubcribed = false);
-  }, []);
+  const [customers, loading, error] = useFetch("customers");
 
   const dataSource = customers.map((item) => {
     return {
@@ -74,9 +35,9 @@ const Customer = () => {
     history.push("/newCustomer");
   };
 
-  if (isLoading) return <Spin />;
+  if (loading) return <Spin />;
 
-  if (errors) return <p>{errors}</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="margin-25">

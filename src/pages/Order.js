@@ -39,28 +39,24 @@ const Order = () => {
     }
     setSelectedCustomer(value);
     setOrder({
-      ...initOrder,
       customer: result,
+      products: [],
     });
   };
 
   const checkOutHandler = async () => {
     const form = formRef.current;
     if (form) {
-      try {
-        await form.validateFields();
-        const newOrder = {
-          customerId: order.customer.id,
-          products: order.products,
-        };
+      await form.validateFields();
+      const newOrder = {
+        customerId: order.customer.id,
+        products: order.products,
+      };
 
-        orderService.create("orders", newOrder).catch((err) => {
-          console.log(err);
-        });
-        history.push("/customer");
-      } catch (err) {
-        alert(err);
-      }
+      orderService.create("orders", newOrder).catch((err) => {
+        console.log(err);
+      });
+      history.push("/customer");
     }
   };
 

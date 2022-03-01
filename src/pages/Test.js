@@ -4,11 +4,11 @@ import EditableTable from "../components/EditableTable";
 
 const originData = [];
 
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 5; i++) {
   originData.push({
     key: Math.floor(Math.random() * 1000 * i),
     name: `Test ${i}`,
-    age: `age ${i}`,
+    age: i + 1,
     address: `Addess ${i} street`,
   });
 }
@@ -22,8 +22,11 @@ const Test = () => {
   const checkoutHandler = async () => {
     const form = formRef.current;
     await form.validateFields();
-    const formValues = form.getFieldsValue();
-    console.log(formValues);
+
+    console.log(data);
+  };
+  const updateData = (values) => {
+    setData(values)
   };
 
   const columns = [
@@ -32,7 +35,7 @@ const Test = () => {
       dataIndex: "name",
       width: "25%",
       editable: true,
-      renderFormInput: (form, recordKey) => {
+      renderFormInput: (form, recordKey, updateOtherValues) => {
         return (
           <Select
             options={[
@@ -40,12 +43,21 @@ const Test = () => {
               { label: "Smith", value: "Smith" },
             ]}
             onChange={(value) => {
+              const updatedData = {
+                [recordKey]: {
+                  name: value,
+                  age: 210,
+                  address: `${value}'s address`,
+                },
+              };
               if (value === "Halland") {
-                form.setFieldsValue({ [recordKey]: { age: 100 } });
+                updateOtherValues(updatedData);
               } else {
-                form.setFieldsValue({
+                updateOtherValues({
                   [recordKey]: {
+                    name: value,
                     age: 10,
+                    address: `${value}'s address`,
                   },
                 });
               }
@@ -74,14 +86,16 @@ const Test = () => {
       <EditableTable
         columns={columns}
         dataSource={data}
-        onChange={(changedValues) => setData(changedValues)}
+        onChange={(changedValues) => updateData(changedValues)}
         addNewButtonText="Add new Test"
         type={"multiple"}
         formRef={formRef}
       >
-        <Button danger onClick={checkoutHandler}>
-          Checkout
-        </Button>
+        <div className="dflex justify-end">
+          <Button danger onClick={checkoutHandler}>
+            Checkout
+          </Button>
+        </div>
       </EditableTable>
     </div>
   );

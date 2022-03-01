@@ -37,10 +37,10 @@ const OrderCustomer = (props) => {
         optionFilterProp="children"
         filterOption={(input, option) =>
           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
-      >
-        {customerLists}
+        }>
+          {customerLists}
       </Select>
+
       {selectedCustomer && (
         <Descriptions
           bordered

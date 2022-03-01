@@ -39,7 +39,6 @@ const CustomerOrder = (props) => {
   useEffect(() => {
     const order = findCustomerOrder(orders);
     setOrder(order);
-    
   }, [id, orders]);
 
   const doubleClickHanlder = (record) => {
@@ -61,7 +60,6 @@ const CustomerOrder = (props) => {
       totalAmount,
     };
   });
-  console.log(order);
 
   return (
     <Table
