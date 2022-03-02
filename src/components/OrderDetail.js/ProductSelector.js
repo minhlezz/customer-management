@@ -1,6 +1,10 @@
 import React from "react";
 import { Select } from "antd";
 
+export const Item = () => {
+  return <div>Item</div>;
+};
+
 const ProductSelector = ({ data, updateOtherValues, recordKey, value }) => {
   const productOptions = data.map((product) => {
     return {

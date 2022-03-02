@@ -16,7 +16,7 @@ const useFetch = (nameService) => {
           const values = snapshot.val();
           for (let key in values) {
             result.push({
-              id: key,
+              uniqueId: key,
               ...values[key],
             });
           }

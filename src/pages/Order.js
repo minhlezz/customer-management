@@ -3,9 +3,10 @@ import { Button, Spin, Tabs } from "antd";
 
 import useFetch from "../hooks/useFetch";
 import OrderCustomer from "../components/Order/OrderCustomer";
-import OrderTable from "../components/Order/OrderTable";
+// import OrderTable from "../components/Order/OrderTable";
 import * as orderService from "../firebase/firebase.service";
 import { useHistory } from "react-router-dom";
+import OrderProtable from "../components/Order/OrderProtable";
 
 const { TabPane } = Tabs;
 
@@ -33,7 +34,7 @@ const Order = () => {
 
   const selectChangeHandler = (value) => {
     let result = {};
-    const filterCustomer = customers.filter((item) => item.id === value);
+    const filterCustomer = customers.filter((item) => item.uniqueId === value);
     if (filterCustomer.length && filterCustomer.length < 2) {
       result = filterCustomer[0];
     }
@@ -49,14 +50,14 @@ const Order = () => {
     if (form) {
       await form.validateFields();
       const newOrder = {
-        customerId: order.customer.id,
+        customerId: order.customer.uniqueId,
         products: order.products,
       };
-
-      orderService.create("orders", newOrder).catch((err) => {
-        console.log(err);
-      });
-      history.push("/customer");
+      console.log(newOrder);
+      // orderService.create("orders", newOrder).catch((err) => {
+      //   console.log(err);
+      // });
+      // history.push("/customer");
     }
   };
 
@@ -79,7 +80,7 @@ const Order = () => {
           />
         </TabPane>
         <TabPane tab="Order List" key="2" disabled={!selectedCustomer}>
-          <OrderTable
+          {/* <OrderTable
             formRef={formRef}
             products={products}
             orderProducts={order.products}
@@ -91,7 +92,14 @@ const Order = () => {
                 Checkout
               </Button>
             </div>
-          </OrderTable>
+          </OrderTable> */}
+          <OrderProtable products={products} orderProducts={order.products} updateOrderProducts={updateOrderProducts} >
+            <div className="dflex justify-end margin-bottom-8">
+              <Button danger type="primary" onClick={checkOutHandler} >
+                Checkout
+              </Button>
+            </div>
+          </OrderProtable>
         </TabPane>
       </Tabs>
     </div>

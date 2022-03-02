@@ -16,7 +16,7 @@ const OrderCustomer = (props) => {
 
   const customerLists = customers.map((item) => {
     return (
-      <Option value={item.id} key={item.id}>
+      <Option value={item.uniqueId} key={item.uniqueId}>
         {`${item.firstName} ${item.lastName}`}
       </Option>
     );

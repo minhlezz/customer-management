@@ -26,9 +26,9 @@ const Header = () => {
         <Menu.Item key="product">
           <Link to="/product">Product</Link>
         </Menu.Item>
-        {/* <Menu.Item key="test">
+        <Menu.Item key="test">
           <Link to="/test">Test</Link>
-        </Menu.Item> */}
+        </Menu.Item>
       </Menu>
     </Layout.Header>
   );
