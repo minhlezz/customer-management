@@ -1,7 +1,7 @@
 import { InputNumber, Select } from "antd";
 import React from "react";
 import EditableTable from "../EditableTable/";
-import ProductSelector from "../OrderDetail.js/ProductSelector";
+import ProductSelector from "../OrderDetail/ProductSelector";
 
 const OrderTable = (props) => {
   const { products, formRef, orderProducts, updateOrderProducts } = props;

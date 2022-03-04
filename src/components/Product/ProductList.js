@@ -1,31 +1,43 @@
-import React, { Fragment } from "react";
-import { Descriptions } from "antd";
+import React from "react";
+import { Descriptions, Table } from "antd";
+import { Fragment } from "react/cjs/react.production.min";
 
-const ProductList = (props) => {
-  const { products } = props;
+const ExtraOptions = ({ record }) => {
+  return (
+    <Descriptions title="Options" column={2} bordered>
+      {record &&
+        record.extraOptions.map((element, index) => (
+          <Fragment key={index}>
+            <Descriptions.Item label="Name">{element.optionName}</Descriptions.Item>
+            <Descriptions.Item label="Price" >{element.price}</Descriptions.Item>
+          </Fragment>
+        ))}
+    </Descriptions>
+  );
+};
 
-  const productList = products.map((product, index) => {
-    return (
-      <Fragment key={index}>
-        <Descriptions.Item label="Product">
-          {product.productName}
-        </Descriptions.Item>
-        <Descriptions.Item label="Price">
-          {product.productPrice}
-        </Descriptions.Item>
-      </Fragment>
-    );
+const ProductList = ({ products }) => {
+  const dataSource = products.map((prod, index) => {
+    return {
+      ...prod,
+      key: index + 1,
+    };
   });
 
+  const columns = [
+    { title: "Product", dataIndex: "productName", key: "productName" },
+    { title: "Price", dataIndex: "productPrice", key: "productPrice" },
+  ];
+
   return (
-    <Descriptions
-      title="List Product"
-      bordered
-      column={2}
-      className="bg-white padding-top-20"
-    >
-      {productList}
-    </Descriptions>
+    <Table
+      columns={columns}
+      expandable={{
+        expandedRowRender: (record) => <ExtraOptions record={record} />,
+        rowExpandable: (record) => record.extraOptions !== [] &&  record.extraOptions !== undefined,
+      }}
+      dataSource={dataSource}
+    />
   );
 };
 

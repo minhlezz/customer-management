@@ -1,23 +1,17 @@
-import { Button, Form, Input } from "antd";
-import Title from "antd/lib/typography/Title";
 import React from "react";
+import { Button, Col, Form, Input, InputNumber, Row, Space } from "antd";
+import Title from "antd/lib/typography/Title";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 const formLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 10 },
+  labelCol: { span: 6 },
+  wrapperCol: { span: 12 },
 };
 
-const ProductForm = (props) => {
-  const [form] = Form.useForm();
-
-  const onFinish = (values) => {
-    props.addProductHandler(values);
-    form.resetFields();
-  };
-
+const ProductForm = ({ form, addProductHandler }) => {
   return (
     <div className="margin-25">
-      <Form form={form} {...formLayout} name="form-product" onFinish={onFinish}>
+      <Form form={form} {...formLayout} name="form-product">
         <Title level={4} type="secondary">
           Product Form
         </Title>
@@ -35,8 +29,9 @@ const ProductForm = (props) => {
         >
           <Input />
         </Form.Item>
+
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" onClick={addProductHandler}>
             Add Product
           </Button>
         </Form.Item>

@@ -31,6 +31,7 @@ const useFetch = (nameService) => {
       })
       .catch((error) => {
         setErrors(error);
+        setIsLoading(false);
       });
     return () => (isSubcribed = false);
   }, [nameService]);

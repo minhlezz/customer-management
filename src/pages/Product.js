@@ -1,72 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { Spin } from "antd";
+import React from "react";
+import { Form, Spin, Tabs } from "antd";
 
 import ProductForm from "../components/Product/ProductForm";
 import ProductList from "../components/Product/ProductList";
 import * as productService from "../firebase/firebase.service";
+import useFetch from "../hooks/useFetch";
 
+const { TabPane } = Tabs;
 const Product = () => {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState();
+  const [form] = Form.useForm();
 
-  const fetchProduct = (isSubcribed) => {
-    let result = [];
-    productService
-      .findAll("products")
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const values = snapshot.val();
-          for (let key in values) {
-            result.push({
-              id: key,
-              ...values[key],
-            });
-          }
-          if (isSubcribed) {
-            setProducts(result);
-          }
-          setIsLoading(false);
-        } else {
-          console.log("No data available");
-          setIsLoading(false);
-        }
-      })
-      .catch((error) => {
-        setErrors(error);
-      });
+  const [products, loading, error, setProducts] = useFetch("products");
+
+  const updateProductHandler = (values) => {
+    setProducts(values);
   };
 
-  useEffect(() => {
-    let isSubcribed = true;
-
-    fetchProduct(isSubcribed);
-
-    return () => (isSubcribed = false);
-  }, []);
-
-  const addProductHandler = (values) => {
-    const newProduct = {
-      productName: values.productName,
-      productPrice: +values.productPrice,
-    };
-    productService
-      .create("products", newProduct)
-      .then(() => {
-        setProducts([...products, newProduct]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const addProductHandler = async () => {
+    await form.validateFields();
+    const formValues = form.getFieldsValue();
+    form.resetFields();
+    const newProduct = [...products, formValues];
+    await productService.create("products", formValues);
+    updateProductHandler(newProduct);
   };
 
-  if (isLoading) return <Spin />;
-  if (errors) return <p>{errors}</p>;
+  if (loading) return <Spin />;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <ProductForm addProductHandler={addProductHandler} />
-      <ProductList products={products} />
+    <div className="margin-25">
+      <Tabs defaultActiveKey="1" tabPosition="left" style={{ minHeight: 220 }} >
+        <TabPane tab="Product List" key="1" >
+          <ProductList products={products} />
+        </TabPane>
+        <TabPane tab="Add Product" key="2">
+          <ProductForm
+            updateProductHandler={updateProductHandler}
+            form={form}
+            addProductHandler={addProductHandler}
+          />
+        </TabPane>
+      </Tabs>
     </div>
   );
 };

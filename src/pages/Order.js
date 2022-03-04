@@ -27,10 +27,6 @@ const Order = () => {
   if (customerErrors || productErros)
     return <p>{customerErrors || productErros}</p>;
 
-  const onTabCallback = (key) => {
-    console.log(key);
-  };
-
   const selectChangeHandler = (value) => {
     let result = {};
     const filterCustomer = customers.filter((item) => item.uniqueId === value);
@@ -43,34 +39,31 @@ const Order = () => {
       products: [],
     });
   };
-
-  const mapProductKeyById = () => {
-    const products = order.products.reduce((acc, curr) => {
-      return {
-        ...acc,
-        [curr.uniqueId]: {
-          productName: curr.productName,
-          productPrice: curr.productPrice,
-          productQuantity: curr.productQuantity,
-        },
-      };
-    }, {});
-    return products;
-  };
+  console.log(order);
 
   const checkOutHandler = async () => {
     if (form) {
       await form.validateFields();
-      const newFormProducts = mapProductKeyById();
+      const newProducts = order.products.map(
+        ({ uniqueId, productName, productPrice, productQuantity }) => {
+          return {
+            uniqueId,
+            productName,
+            productPrice,
+            productQuantity,
+          };
+        }
+      );
+
       const newOrder = {
         customerId: order.customer.uniqueId,
-        products: newFormProducts,
+        products: newProducts,
       };
-
-      orderService.create("orders", newOrder).catch((err) => {
-        console.log(err);
-      });
-      history.push("/customer");
+      console.log(form.getFieldsValue());
+      // orderService.create("orders", newOrder).catch((err) => {
+      //   console.log(err);
+      // });
+      // history.push("/customer");
     }
   };
 
@@ -83,7 +76,7 @@ const Order = () => {
 
   return (
     <div className="margin-25">
-      <Tabs defaultActiveKey="1" onChange={onTabCallback}>
+      <Tabs defaultActiveKey="1">
         <TabPane tab="Order" key="1">
           <OrderCustomer
             customers={customers}

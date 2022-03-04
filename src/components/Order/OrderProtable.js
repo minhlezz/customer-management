@@ -9,27 +9,11 @@ const OrderProtable = ({
   updateOrderProducts,
   form,
 }) => {
-  const [editableKeys, setEditableRowKeys] = useState([]);
+  const [editableKeys, setEditableRowKeys] = useState(() => [].map((item) => item.id));
+  const [dataSource, setDataSource] = useState([]);
 
-
-  const updateAllValuesChange = (form, updatedValues) => {
-    form.setFieldsValue(updatedValues);
-  };
 
   const columns = [
-    {
-      title: "",
-      dataIndex: "id",
-      readonly: true,
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: "id is required",
-          },
-        ],
-      },
-    },
     {
       title: "Product ID",
       dataIndex: "uniqueId",
@@ -71,13 +55,14 @@ const OrderProtable = ({
             const selectedProduct = products.find(
               (prod) => prod.productName === value
             );
+        
             const updatedData = {
-              [rowKey]: {
+              [rowKey[0]]: {                
                 ...selectedProduct,
                 productQuantity: 1,
+                id: rowKey[0]
               },
             };
-            updateAllValuesChange(form, updatedData);
           },
         };
       },
@@ -104,7 +89,7 @@ const OrderProtable = ({
         rules: [
           {
             required: true,
-            message: '此项为必填项',
+            message: "此项为必填项",
           },
         ],
       },
@@ -113,43 +98,22 @@ const OrderProtable = ({
       title: "Operation",
       valueType: "option",
       width: 200,
-      render: (text, record, _, action) => [
-        <a
-          key="editable"
-          onClick={() => {
-            var _a;
-            (_a =
-              action === null || action === void 0
-                ? void 0
-                : action.startEditable) === null || _a === void 0
-              ? void 0
-              : _a.call(action, record.id);
-          }}
-        >
-          Edit
-        </a>,
-        <a
-          key="delete"
-          onClick={() => {
-            updateOrderProducts(
-              orderProducts.filter((item) => item.id !== record.id)
-            );
-          }}
-        >
-          Delete
-        </a>,
-      ],
+      render: () => {
+        return null;
+      },
     },
   ];
+
+  console.log(dataSource);
 
   return (
     <>
       {children}
       <EditableProTable
-        columns={columns}
-        value={orderProducts}
-        onChange={updateOrderProducts}
         rowKey="id"
+        columns={columns}
+        value={dataSource}
+        onChange={setDataSource}
         locale={{
           emptyText: (
             <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -158,33 +122,23 @@ const OrderProtable = ({
         recordCreatorProps={{
           position: "bottom",
           creatorButtonText: "Add new record",
-          record: (index, data) => {
-            return {
-              id: index + 1,
-            };
-          },
+          newRecordType: "dataSource",
+          record: () => ({
+            id: Date.now(),
+          }),
         }}
         editable={{
           type: "multiple",
           editableKeys,
-          form: form,
-          onSave: async (rowKey, data, row) => {
-            console.log(rowKey, data, row);
+          deleteText: "delete",
+          actionRender: (row, config, defaultDoms) => {
+            return [defaultDoms.delete];
           },
           onChange: setEditableRowKeys,
-          saveText: "Save",
-          cancelText: "Cancel",
-          deleteText: "Delete",
-          deletePopconfirmMessage: "Delete? Sure",
+          onValuesChange: (record, recordList) => {
+           console.log(recordList);
+          },
         }}
-        tableStyle={{
-          margin: "20px",
-        }}
-        request={async () => ({
-          data: orderProducts,
-          total: 2,
-          success: true,
-        })}
       />
     </>
   );

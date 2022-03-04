@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
+import { useParams ,useHistory} from "react-router-dom";
 import { Button, Form, Spin } from "antd";
 import Title from "antd/lib/typography/Title";
 
@@ -9,16 +9,14 @@ import useFetchByID from "../hooks/useFetchByID";
 import useFetch from "../hooks/useFetch";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 
-
 const OrderDetail = () => {
   const params = useParams();
   const id = params.orderId;
   const [form] = Form.useForm();
-
+  const history = useHistory();
 
   const [order, loading, error, setOrder] = useFetchByID("orders", { id });
   const [products, productLoading, productErros] = useFetch("products");
-
 
   if (loading || productLoading) return <Spin />;
   if (error || productErros) return <p>{error || productErros}</p>;
@@ -26,37 +24,27 @@ const OrderDetail = () => {
   const { createdAt } = order;
 
   const updateProductHandler = (newValues) => {
-
-    const mergeDulicatedProduct = newValues.filter(prod => prod.productId === prod.productId)
-    console.log(mergeDulicatedProduct);
-
-    const productsObjectKeyIsId = newValues.reduce((acc,curr) => {
-      return {
-        ...acc,
-        [curr.productId]: {
-          productName: curr.productName,
-          productPrice: curr.productPrice,
-          productQuantity: curr.productQuantity
-        }
+    const newProducts = newValues.map(
+      ({ productName, productPrice, productQuantity, uniqueId }) => {
+        return {
+          productName,
+          productPrice,
+          productQuantity,
+          uniqueId,
+        };
       }
-    }, {})
-    //Check duplicated
-      // console.log(newValues);
+    );
     const updatedData = {
       ...order,
-      products: {
-        ...productsObjectKeyIsId
-      },
+      products: newProducts,
     };
-    // console.log(updatedData);
-    // setOrder(updatedData);
+    setOrder(updatedData);
   };
 
 
   const saveHandler = async () => {
-    console.log("save");
     const { customerId, createdAt, products } = order;
-
+    await form.validateFields();
     const options = {
       id,
       service: "orders",
@@ -66,14 +54,14 @@ const OrderDetail = () => {
         products,
       },
     };
-    // orderDetailService
-    //   .updateById(options)
-    //   .then(() => {
-    //     console.log("success");
-    //   })
-    //   .catch((err) => console.error(err));
+    orderDetailService
+      .updateById(options)
+      .then(() => {
+        console.log("success");
+      })
+      .catch((err) => console.error(err));
 
-    // history.goBack();
+    history.goBack();
   };
 
   return (

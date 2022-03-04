@@ -13,23 +13,13 @@ const OrderDetailTable = ({
   const [editableKeys, setEditableRowKeys] = useState([]);
   const history = useHistory();
 
-  const orderProductList = Object.keys(orderProducts).map((key, index) => {
+  const orderProductsList = orderProducts.map((prod, index) => {
     return {
-      ...orderProducts[key],
-      productId: key,
+      ...prod,
       id: index + 1,
-      key: (Math.random() * 100000).toFixed(2),
+      productId: prod.uniqueId,
     };
   });
-  const updateDataSource = (values) => {
-    const newValues = Object.keys(values).map((key) => values[key]);
-    console.log(newValues);
-
-  };
-
-  const updateAllValuesChange = (form, updatedValues) => {
-    form.setFieldsValue(updatedValues);
-  };
 
   const columns = [
     {
@@ -69,7 +59,7 @@ const OrderDetailTable = ({
                 productId: selectedProduct.uniqueId,
               },
             };
-            updateAllValuesChange(form, updatedData);
+            form.setFieldsValue(updatedData);
           },
         };
       },
@@ -145,8 +135,8 @@ const OrderDetailTable = ({
   ];
 
   const doubleClickHanlder = (record) => {
-    if (record.id) {
-      const newPath = `/product/${record.id}`;
+    if (record.productId) {
+      const newPath = `/product/${record.productId}`;
       history.push(newPath);
     }
     return;
@@ -156,7 +146,20 @@ const OrderDetailTable = ({
     <>
       <EditableProTable
         columns={columns}
-        value={orderProductList}
+        value={orderProductsList}
+        editable={{
+          type: "multiple",
+          form: form,
+          editableKeys,
+          onSave: async (rowKey, data, row) => {
+            console.log(row);
+          },
+          onChange: setEditableRowKeys,
+          saveText: "Save",
+          cancelText: "Cancel",
+          deleteText: "Delete",
+          deletePopconfirmMessage: "Delete? Sure",
+        }}
         onChange={updateProductHandler}
         rowKey="id"
         recordCreatorProps={{
@@ -168,26 +171,20 @@ const OrderDetailTable = ({
             };
           },
         }}
-        editable={{
-          type: "multiple",
-          form: form,
-          editableKeys,
-          onSave: async (rowKey, data, row) => {
-            console.log(rowKey, data, row);
-          },
-          onChange: setEditableRowKeys,
-          saveText: "Save",
-          cancelText: "Cancel",
-          deleteText: "Delete",
-          deletePopconfirmMessage: "Delete? Sure",
-        }}
         locale={{
           emptyText: (
             <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
           ),
         }}
+        onRow={(record) => {
+          return {
+            onDoubleClick: () => {
+              doubleClickHanlder(record);
+            },
+          };
+        }}
         request={async () => ({
-          data: orderProductList,
+          data: orderProductsList,
           total: 2,
           success: true,
         })}
