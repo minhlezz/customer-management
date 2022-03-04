@@ -1,16 +1,31 @@
 import React, { useState } from "react";
 import { EditableProTable } from "@ant-design/pro-table";
+import { useHistory } from "react-router-dom";
 import { Empty } from "antd";
 
-const OrderProtable = ({
-  products,
-  children,
+const OrderDetailTable = ({
+  order,
   orderProducts,
-  updateOrderProducts,
   form,
+  products,
+  updateProductHandler,
 }) => {
   const [editableKeys, setEditableRowKeys] = useState([]);
+  const history = useHistory();
 
+  const orderProductList = Object.keys(orderProducts).map((key, index) => {
+    return {
+      ...orderProducts[key],
+      productId: key,
+      id: index + 1,
+      key: (Math.random() * 100000).toFixed(2),
+    };
+  });
+  const updateDataSource = (values) => {
+    const newValues = Object.keys(values).map((key) => values[key]);
+    console.log(newValues);
+
+  };
 
   const updateAllValuesChange = (form, updatedValues) => {
     form.setFieldsValue(updatedValues);
@@ -21,39 +36,15 @@ const OrderProtable = ({
       title: "",
       dataIndex: "id",
       readonly: true,
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: "id is required",
-          },
-        ],
-      },
-    },
-    {
-      title: "Product ID",
-      dataIndex: "uniqueId",
-      readonly: true,
-      width: "25%",
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            message: "ProductID is required",
-          },
-        ],
-      },
     },
     {
       title: "Product",
       dataIndex: "productName",
-      valueType: "select",
-      width: "25%",
       formItemProps: {
         rules: [
           {
             required: true,
-            message: "Product Name is required",
+            message: "Please input Product",
           },
         ],
       },
@@ -75,6 +66,7 @@ const OrderProtable = ({
               [rowKey]: {
                 ...selectedProduct,
                 productQuantity: 1,
+                productId: selectedProduct.uniqueId,
               },
             };
             updateAllValuesChange(form, updatedData);
@@ -85,26 +77,36 @@ const OrderProtable = ({
     {
       title: "Price",
       dataIndex: "productPrice",
-      width: "15%",
       formItemProps: {
         rules: [
           {
             required: true,
-            message: "此项为必填项",
+            message: "Please Select Product",
           },
         ],
       },
     },
-
     {
       title: "Quantity",
       dataIndex: "productQuantity",
-      width: "10%",
       formItemProps: {
         rules: [
           {
             required: true,
-            message: '此项为必填项',
+            message: "Please input Quantity",
+          },
+        ],
+      },
+    },
+    {
+      title: "Product ID",
+      readonly: true,
+      dataIndex: "productId",
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please input ID",
           },
         ],
       },
@@ -115,7 +117,7 @@ const OrderProtable = ({
       width: 200,
       render: (text, record, _, action) => [
         <a
-          key="editable"
+          key="edit"
           onClick={() => {
             var _a;
             (_a =
@@ -131,7 +133,7 @@ const OrderProtable = ({
         <a
           key="delete"
           onClick={() => {
-            updateOrderProducts(
+            updateProductHandler(
               orderProducts.filter((item) => item.id !== record.id)
             );
           }}
@@ -142,19 +144,21 @@ const OrderProtable = ({
     },
   ];
 
+  const doubleClickHanlder = (record) => {
+    if (record.id) {
+      const newPath = `/product/${record.id}`;
+      history.push(newPath);
+    }
+    return;
+  };
+
   return (
     <>
-      {children}
       <EditableProTable
         columns={columns}
-        value={orderProducts}
-        onChange={updateOrderProducts}
+        value={orderProductList}
+        onChange={updateProductHandler}
         rowKey="id"
-        locale={{
-          emptyText: (
-            <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          ),
-        }}
         recordCreatorProps={{
           position: "bottom",
           creatorButtonText: "Add new record",
@@ -166,8 +170,8 @@ const OrderProtable = ({
         }}
         editable={{
           type: "multiple",
-          editableKeys,
           form: form,
+          editableKeys,
           onSave: async (rowKey, data, row) => {
             console.log(rowKey, data, row);
           },
@@ -177,11 +181,13 @@ const OrderProtable = ({
           deleteText: "Delete",
           deletePopconfirmMessage: "Delete? Sure",
         }}
-        tableStyle={{
-          margin: "20px",
+        locale={{
+          emptyText: (
+            <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          ),
         }}
         request={async () => ({
-          data: orderProducts,
+          data: orderProductList,
           total: 2,
           success: true,
         })}
@@ -190,4 +196,4 @@ const OrderProtable = ({
   );
 };
 
-export default OrderProtable;
+export default OrderDetailTable;

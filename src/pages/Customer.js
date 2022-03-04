@@ -6,7 +6,7 @@ import Title from "antd/lib/typography/Title";
 import useFetch from "../hooks/useFetch";
 
 const columns = [
-  { title: "ID", dataIndex: "id", key: "id" },
+  { title: "ID", dataIndex: "uniqueId", key: "uniqueId" },
   { title: "First Name", dataIndex: "firstName", key: "firstName" },
   { title: "Last Name", dataIndex: "lastName", key: "lastName" },
   { title: "Address", dataIndex: "address", key: "address" },
@@ -21,13 +21,13 @@ const Customer = () => {
   const dataSource = customers.map((item) => {
     return {
       ...item,
-      key: item.id,
+      key: item.uniqueId,
     };
   });
 
   const doubleClickHanlder = (values) => {
     const currentPath = history.location.pathname;
-    const newPath = `${currentPath}/${values.id}`;
+    const newPath = `${currentPath}/${values.uniqueId}`;
     history.push(newPath);
   };
 

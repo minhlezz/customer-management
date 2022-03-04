@@ -5,7 +5,17 @@ import { toFormatDate } from "../../utils/utils";
 
 const columns = [
   {
-    title: "Date",
+    title: "",
+    dataIndex: "key",
+    key: "key",
+  },
+  {
+    title: "Total Amount",
+    dataIndex: "totalAmount",
+    key: "totalAmount",
+  },
+  {
+    title: "Order Date",
     dataIndex: "date",
     key: "date",
   },
@@ -13,11 +23,6 @@ const columns = [
     title: "Order ID",
     dataIndex: "orderId",
     key: "orderId",
-  },
-  {
-    title: "Total Amount",
-    dataIndex: "totalAmount",
-    key: "totalAmount",
   },
 ];
 
@@ -46,23 +51,29 @@ const CustomerOrder = (props) => {
     history.push(newPath);
   };
 
+  const totalPriceCalc = (products) => {
+    const productList = products;
+    let total = 0;
+    for(let id in productList) {
+      total += productList[id].productPrice * productList[id].productQuantity;  
+    }
+    return total;
+  }
+
   const orderHistory = order.map((item, index) => {
-    const totalAmount = item.products.reduce(
-      (acc, { productQuantity, productPrice }) => {
-        return acc + productQuantity * productPrice;
-      },
-      0
-    );
+    const totalAmount = totalPriceCalc(item.products)
+
     return {
-      key: index,
+      key: index + 1,
       date: toFormatDate(item.createdAt),
-      orderId: item.id,
+      orderId: item.uniqueId,
       totalAmount,
     };
   });
 
   return (
     <Table
+      bordered
       dataSource={orderHistory}
       columns={columns}
       onRow={(record) => {

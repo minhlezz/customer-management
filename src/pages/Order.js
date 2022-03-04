@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Button, Spin, Tabs } from "antd";
+import { Button, Form, Spin, Tabs } from "antd";
 
 import useFetch from "../hooks/useFetch";
 import OrderCustomer from "../components/Order/OrderCustomer";
@@ -18,8 +18,7 @@ const Order = () => {
   const history = useHistory();
   const [order, setOrder] = useState(initOrder);
   const [selectedCustomer, setSelectedCustomer] = useState("");
-
-  const formRef = useRef(null);
+  const [form] = Form.useForm();
 
   const [customers, customerLoading, customerErrors] = useFetch("customers");
   const [products, productLoading, productErros] = useFetch("products");
@@ -45,19 +44,33 @@ const Order = () => {
     });
   };
 
+  const mapProductKeyById = () => {
+    const products = order.products.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr.uniqueId]: {
+          productName: curr.productName,
+          productPrice: curr.productPrice,
+          productQuantity: curr.productQuantity,
+        },
+      };
+    }, {});
+    return products;
+  };
+
   const checkOutHandler = async () => {
-    const form = formRef.current;
     if (form) {
       await form.validateFields();
+      const newFormProducts = mapProductKeyById();
       const newOrder = {
         customerId: order.customer.uniqueId,
-        products: order.products,
+        products: newFormProducts,
       };
-      console.log(newOrder);
-      // orderService.create("orders", newOrder).catch((err) => {
-      //   console.log(err);
-      // });
-      // history.push("/customer");
+
+      orderService.create("orders", newOrder).catch((err) => {
+        console.log(err);
+      });
+      history.push("/customer");
     }
   };
 
@@ -80,22 +93,14 @@ const Order = () => {
           />
         </TabPane>
         <TabPane tab="Order List" key="2" disabled={!selectedCustomer}>
-          {/* <OrderTable
-            formRef={formRef}
+          <OrderProtable
             products={products}
             orderProducts={order.products}
             updateOrderProducts={updateOrderProducts}
-            checkOutHandler={checkOutHandler}
+            form={form}
           >
-            <div className="dflex justify-end">
-              <Button danger type="primary" onClick={checkOutHandler}>
-                Checkout
-              </Button>
-            </div>
-          </OrderTable> */}
-          <OrderProtable products={products} orderProducts={order.products} updateOrderProducts={updateOrderProducts} >
             <div className="dflex justify-end margin-bottom-8">
-              <Button danger type="primary" onClick={checkOutHandler} >
+              <Button danger type="primary" onClick={checkOutHandler}>
                 Checkout
               </Button>
             </div>
