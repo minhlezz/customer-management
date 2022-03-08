@@ -3,19 +3,19 @@ import { Form } from "antd";
 import React from "react";
 import Accessories from "./Accessories";
 
-const Expandable = ({ rowData }) => {
+const Expandable = ({ record, dataSource }) => {
   return (
     <div>
       <ProFormDigit
         label="discount"
-        name={[rowData.id, "discount"]}
+        name={[record.id, "discount"]}
         min={0}
         fieldProps={{
           style: { maxWidth: 200 },
         }}
       />
-      <Form.Item name={[rowData.id, "accessories"]}>
-        <Accessories  />
+      <Form.Item name={[record.id, "accessory"]}>
+        <Accessories recordParent={record} dataSource={dataSource} />
       </Form.Item>
     </div>
   );

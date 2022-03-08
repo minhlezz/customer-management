@@ -23,6 +23,7 @@ const OrderProtable = ({
     const selectedProduct = products.find((prod) => prod.productName === value);
     return selectedProduct;
   };
+  console.log(dataSource);
 
   const columns = [
     {
@@ -112,7 +113,7 @@ const OrderProtable = ({
       },
     },
   ];
-  console.log(dataSource);
+
   return (
     <>
       {children}
@@ -166,27 +167,27 @@ const OrderProtable = ({
               const item = newData[itemIndex];
               newData.splice(itemIndex, 1, { ...item, ...updatedData });
             }
-            // const accessories = newData.forEach((item) => {
-            //   item.accessories.reduce((acc, curr) => {
-            //     return acc + curr.productQuantity * curr.productPrice;
-            //   }, 0);
-            // });
-            // console.log(accessories);
+            console.log(newData);
             const result = newData.reduce((acc, curr) => {
               return [
                 ...acc,
                 {
                   ...curr,
-                  totalPrice: curr.productQuantity * curr.productPrice,
+                  totalPrice:
+                    curr.productQuantity * curr.productPrice +
+                    curr.accessory.reduce((acc, curr) => {
+                      return acc + curr.totalPrice;
+                    }, 0),
                 },
               ];
             }, []);
-
             setDataSource(result);
           },
         }}
         expandable={{
-          expandedRowRender,
+          expandedRowRender: (record) => {
+            return <Expandable record={record} dataSource={dataSource} />;
+          },
         }}
       />
     </>

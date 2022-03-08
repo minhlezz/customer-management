@@ -1,16 +1,21 @@
 import { EditableProTable } from "@ant-design/pro-table";
 import React, { useState } from "react";
 
-const Accessories = ({value, onChange}) => {
-  const [dataSource, setDataSource] = useState([]);
-  const [editableKeys, setEditableRowKeys] = useState(() =>
-    dataSource?.map((item) => item.id)
-  );
+const accessories = [
+  { accessory: "comb", price: 30.03 },
+  { accessory: "brush", price: 29.5 },
+  { accessory: "scissors", price: 26.1 },
+];
+
+const Accessories = ({ value, onChange, dataSource, recordParent }) => {
+  const editableKeys = value ? value.map((record) => record.id) : [];
+  const setEditableRowKeys = () => {};
+  const onDataChange = onChange;
 
   const columns = [
     {
-      title: "Accessories",
-      dataIndex: "accessories",
+      title: "Accessory",
+      dataIndex: "accessory",
       valueType: "select",
       width: "25%",
       formItemProps: {
@@ -38,7 +43,7 @@ const Accessories = ({value, onChange}) => {
     },
     {
       title: "Price",
-      dataIndex: "productPrice",
+      dataIndex: "price",
       valueType: "digit",
       width: "15%",
       formItemProps: {
@@ -53,7 +58,7 @@ const Accessories = ({value, onChange}) => {
 
     {
       title: "Quantity",
-      dataIndex: "productQuantity",
+      dataIndex: "quantity",
       valueType: "digit",
       width: "10%",
       formItemProps: {
@@ -68,7 +73,7 @@ const Accessories = ({value, onChange}) => {
     {
       title: "Total Price",
       dataIndex: "totalPrice",
-      width: "10%",
+      width: "15%",
       formItemProps: {
         rules: [
           {
@@ -91,7 +96,7 @@ const Accessories = ({value, onChange}) => {
   return (
     <div className="margin-25">
       <EditableProTable
-        tableStyle={{padding: 0}}
+        tableStyle={{ padding: 0 }}
         rowKey="id"
         bordered
         columns={columns}
@@ -114,7 +119,46 @@ const Accessories = ({value, onChange}) => {
           },
           onChange: setEditableRowKeys,
           onValuesChange: (record, recordList) => {
-            onChange(recordList)
+            const changedData = record;
+            const dataList = [...recordList];
+
+            //Check update
+            let isChanged = false;
+
+            if (record) {
+              const prevData = {
+                ...value?.find((item) => item.id === record.id),
+              };
+              if (prevData) {
+                if (changedData?.accessory !== prevData.accessory) {
+                  isChanged = true;
+                } else {
+                  isChanged = false;
+                }
+              }
+            }
+
+            if (isChanged) {
+              const index = dataList.findIndex((item) => item.id === record.id);
+              const selectedItem = accessories.find(
+                (item) => item.accessory === record.accessory
+              );
+              const updatedItem = {
+                ...selectedItem,
+                quantity: 1,
+              };
+              dataList.splice(index, 1, { ...changedData, ...updatedItem });
+            }
+            const result = dataList.reduce((acc, curr) => {
+              return [
+                ...acc,
+                {
+                  ...curr,
+                  totalPrice: curr.quantity * curr.price,
+                },
+              ];
+            }, []);
+            onDataChange(result);
           },
         }}
       />
