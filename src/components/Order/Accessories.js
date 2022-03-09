@@ -7,7 +7,7 @@ const accessories = [
   { accessory: "scissors", price: 26.1 },
 ];
 
-const Accessories = ({ value, onChange, dataSource, recordParent }) => {
+const Accessories = ({ value, onChange }) => {
   const editableKeys = value ? value.map((record) => record.id) : [];
   const setEditableRowKeys = () => {};
   const onDataChange = onChange;
