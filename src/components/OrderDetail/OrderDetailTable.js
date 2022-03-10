@@ -1,35 +1,40 @@
 import React, { useState } from "react";
 import { EditableProTable } from "@ant-design/pro-table";
-import { useHistory } from "react-router-dom";
 import { Empty } from "antd";
+import ExpandableTable from "./ExpandableTable";
 
-const OrderDetailTable = ({
-  order,
-  orderProducts,
-  form,
-  products,
-  updateProductHandler,
-}) => {
-  const [editableKeys, setEditableRowKeys] = useState([]);
-  const history = useHistory();
-
-  const orderProductsList = orderProducts.map((prod, index) => {
+const OrderDetailTable = ({ orderProducts, products , onChange}) => {
+  const originData = orderProducts.map((prod, index) => {
     return {
       ...prod,
-      id: index + 1,
+      id: (Math.random() * 100000).toFixed(2),
       productId: prod.uniqueId,
     };
   });
 
+  const [editableKeys, setEditableRowKeys] = useState(() =>
+    originData.map((item) => item.id)
+  );
+  const [dataSource, setDataSource] = useState(() => originData);
+
   const columns = [
     {
-      title: "",
-      dataIndex: "id",
+      title: "Product ID",
       readonly: true,
+      dataIndex: "productId",
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            message: "Please input ID",
+          },
+        ],
+      },
     },
     {
       title: "Product",
       dataIndex: "productName",
+      valueType: "select",
       formItemProps: {
         rules: [
           {
@@ -46,27 +51,11 @@ const OrderDetailTable = ({
           };
         });
       },
-      fieldProps: (form, { rowKey, rowIndex }) => {
-        return {
-          onSelect: (value) => {
-            const selectedProduct = products.find(
-              (prod) => prod.productName === value
-            );
-            const updatedData = {
-              [rowKey]: {
-                ...selectedProduct,
-                productQuantity: 1,
-                productId: selectedProduct.uniqueId,
-              },
-            };
-            form.setFieldsValue(updatedData);
-          },
-        };
-      },
     },
     {
       title: "Price",
       dataIndex: "productPrice",
+      valueType: "digit",
       formItemProps: {
         rules: [
           {
@@ -79,6 +68,7 @@ const OrderDetailTable = ({
     {
       title: "Quantity",
       dataIndex: "productQuantity",
+      valueType: "digit",
       formItemProps: {
         rules: [
           {
@@ -89,107 +79,111 @@ const OrderDetailTable = ({
       },
     },
     {
-      title: "Product ID",
-      readonly: true,
-      dataIndex: "productId",
+      title: "Total Price",
+      dataIndex: "totalPrice",
+      valueType: "digit",
       formItemProps: {
         rules: [
           {
             required: true,
-            message: "Please input ID",
+            message: "Missing total price",
           },
         ],
       },
     },
+
     {
       title: "Operation",
       valueType: "option",
       width: 200,
-      render: (text, record, _, action) => [
-        <a
-          key="edit"
-          onClick={() => {
-            var _a;
-            (_a =
-              action === null || action === void 0
-                ? void 0
-                : action.startEditable) === null || _a === void 0
-              ? void 0
-              : _a.call(action, record.id);
-          }}
-        >
-          Edit
-        </a>,
-        <a
-          key="delete"
-          onClick={() => {
-            updateProductHandler(
-              orderProducts.filter((item) => item.id !== record.id)
-            );
-          }}
-        >
-          Delete
-        </a>,
-      ],
+      render: () => {
+        return null;
+      },
     },
   ];
 
-  const doubleClickHanlder = (record) => {
-    if (record.productId) {
-      const newPath = `/product/${record.productId}`;
-      history.push(newPath);
-    }
-    return;
-  };
-
   return (
-    <>
-      <EditableProTable
-        columns={columns}
-        value={orderProductsList}
-        editable={{
-          type: "multiple",
-          form: form,
-          editableKeys,
-          onSave: async (rowKey, data, row) => {
-            console.log(row);
-          },
-          onChange: setEditableRowKeys,
-          saveText: "Save",
-          cancelText: "Cancel",
-          deleteText: "Delete",
-          deletePopconfirmMessage: "Delete? Sure",
-        }}
-        onChange={updateProductHandler}
-        rowKey="id"
-        recordCreatorProps={{
-          position: "bottom",
-          creatorButtonText: "Add new record",
-          record: (index, data) => {
-            return {
-              id: index + 1,
-            };
-          },
-        }}
-        locale={{
-          emptyText: (
-            <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-          ),
-        }}
-        onRow={(record) => {
+    <EditableProTable
+      rowKey="id"
+      columns={columns}
+      value={dataSource}
+      controlled
+      locale={{
+        emptyText: (
+          <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        ),
+      }}
+      recordCreatorProps={{
+        position: "bottom",
+        newRecordType: "dataSource",
+        creatorButtonText: "Add new record",
+        record: () => {
           return {
-            onDoubleClick: () => {
-              doubleClickHanlder(record);
-            },
+            id: Date.now(),
           };
-        }}
-        request={async () => ({
-          data: orderProductsList,
-          total: 2,
-          success: true,
-        })}
-      />
-    </>
+        },
+      }}
+      editable={{
+        type: "multiple",
+        editableKeys,
+        actionRender: (row, config, defaultDoms) => {
+          return [defaultDoms.delete];
+        },
+        deleteText: "Remove",
+        onValuesChange: (record, recordList) => {
+          const changedData = record;
+          const rowId = record?.id;
+          const prevData = [...dataSource];
+          const newData = [...recordList];
+          console.log(recordList);
+          const selectedProduct = products.find(
+            (prod) => prod.productName === changedData?.productName
+          );
+
+          const updatedData = {
+            ...selectedProduct,
+            productQuantity: 1,
+            productId: selectedProduct?.uniqueId,
+          };
+          let isProductChanged = false;
+          const oldProduct = prevData.find((item) => item.id === rowId);
+          const currentProduct = newData.find((item) => item.id === rowId);
+          if (oldProduct?.productName !== currentProduct?.productName) {
+            isProductChanged = true;
+          } else {
+            isProductChanged = false;
+          }
+          if (isProductChanged) {
+            const itemIndex = newData.findIndex((item) => item.id === rowId);
+            const item = newData[itemIndex];
+            newData.splice(itemIndex, 1, { ...item, ...updatedData });
+          }
+          const result = newData.reduce((acc, curr) => {
+            return [
+              ...acc,
+              {
+                ...curr,
+                totalPrice:
+                  curr.productQuantity * curr.productPrice +
+                  (curr.accessory
+                    ? curr.accessory.reduce((acc, curr) => {
+                        return acc + curr.price * curr.quantity;
+                      }, 0)
+                    : 0),
+              },
+            ];
+          }, []);
+          onChange(result)
+          setDataSource(result);
+        },
+        onChange: setEditableRowKeys,
+      }}
+      expandable={{
+        expandedRowRender: (record) => (
+          <ExpandableTable record={record} />
+        ),
+      }}
+    />
   );
 };
 

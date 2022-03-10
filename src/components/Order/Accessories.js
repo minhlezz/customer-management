@@ -1,5 +1,5 @@
 import { EditableProTable } from "@ant-design/pro-table";
-import React, { useState } from "react";
+import React from "react";
 
 const accessories = [
   { accessory: "comb", price: 30.03 },
@@ -7,7 +7,7 @@ const accessories = [
   { accessory: "scissors", price: 26.1 },
 ];
 
-const Accessories = ({ value, onChange, recordParent, defaultData }) => {
+const Accessories = ({ value, onChange }) => {
   const editableKeys = value ? value.map((record) => record.id) : [];
   const setEditableRowKeys = () => {};
   const onDataChange = onChange;
