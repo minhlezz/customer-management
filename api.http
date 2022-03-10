@@ -1,0 +1,26 @@
+get http://localhost:1337/classes/Customers
+X-Parse-Application-Id: myAppId
+Content-Type: application/json
+
+###
+post http://localhost:1337/classes/Customers
+X-Parse-Application-Id: myAppId
+Content-Type: application/json
+
+{
+    "message": "OK",
+    "scrore": 123
+}
+
+###
+PUT http://localhost:1337/classes/Customers/95VXFXFNa8
+X-Parse-Application-Id: myAppId
+Content-Type: application/json
+{
+    "phoneNumber": 23133219944
+}
+
+###
+DELETE http://localhost:1337/classes/Customers/c9TTniDddH
+X-Parse-Application-Id: myAppId
+Content-Type: application/json
