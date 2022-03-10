@@ -12,13 +12,7 @@ const useFetchData = (nameService) => {
     getAPI(nameService)
       .then((data) => {
         if (mounted) {
-          const listData = Object.keys(data).map((key) => {
-            return {
-              ...data[key],
-              uniqueId: key,
-            };
-          });
-          setData(listData);
+          setData(data);
         }
       })
       .catch((errors) => {

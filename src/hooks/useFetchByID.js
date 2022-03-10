@@ -1,33 +1,34 @@
 import { useEffect, useState } from "react";
-import * as service from "../firebase/firebase.service";
+const domain = "http://localhost:1337/classes";
 
 const useFetchByID = (nameService, { id }) => {
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState();
-
+  const URL = `${domain}/${nameService}/${id}`;
   useEffect(() => {
-    let isSubcribed = true;
-
-    service
-      .findById(nameService, id)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const value = snapshot.val();
-          if (isSubcribed) {
-            setData(value);
-          }
-          setIsLoading(false);
-        } else {
-          console.log("No data available");
-          setIsLoading(false);
-        }
+    let mounted = true;
+    setIsLoading(true);
+    try {
+      fetch(URL, {
+        headers: {
+          "X-Parse-Application-Id": "myAppId",
+          "Content-Type": "application/json",
+        },
+        method: "GET",
       })
-      .catch((err) => {
-        setErrors(err);
-      });
-
-    return () => (isSubcribed = false);
+        .then((data) => data.json())
+        .then((data) => {
+          setData(data);
+        });
+    } catch (error) {
+      setErrors(error.message);
+      setIsLoading(false);
+    }
+    setIsLoading(false);
+    return () => {
+      mounted = false;
+    };
   }, [id, nameService]);
 
   const updateData = (value) => {

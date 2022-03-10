@@ -16,9 +16,11 @@ const CustomerDetail = () => {
 
   const [orders, orderLoading] = useFetch("orders");
 
-  const [customer, loading, error] = useFetchByID("customers", {
+  const [customer, loading, error] = useFetchByID("Customers", {
     id,
   });
+  
+  console.log(customer);
 
   const backToPreviousPage = () => {
     history.push("/customer");

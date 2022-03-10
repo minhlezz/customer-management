@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CustomerForm from "../components/Customer/CustomerForm";
 import { useHistory } from "react-router-dom";
 import { Spin } from "antd";
-import { postAPI } from "../restService/restService";
+import { fetchAPI } from "../restService/restService";
 
 const NewCustomer = () => {
   const history = useHistory();
@@ -14,13 +14,20 @@ const NewCustomer = () => {
       ...values,
       phoneNumber: +values.phoneNumber,
     };
-    const data = await postAPI("customers", newCustomer);
-    setIsLoading(false);
-    if (data.name) {
-      history.push(`/customer/${data.name}`);
-    } else {
-      return;
+    try {
+      const data = await fetchAPI("Customers", newCustomer, {
+        method: "POST",
+      });
+      console.log(data);
+    } catch (error) {
+      console.error(error);
     }
+    setIsLoading(false);
+    // if (data.name) {
+    //   history.push(`/customer/${data.name}`);
+    // } else {
+    //   return;
+    // }
   };
 
   if (isLoading) return <Spin />;

@@ -1,42 +1,40 @@
 import { useEffect, useState } from "react";
-import * as service from "../firebase/firebase.service";
+const domain = "http://localhost:1337/classes";
 
 const useFetch = (nameService) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState();
+  const URL = `${domain}/${nameService}`;
 
   useEffect(() => {
-    let isSubcribed = true;
-    let result = [];
-    service
-      .findAll(nameService)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const values = snapshot.val();
-          for (let key in values) {
-            result.push({
-              uniqueId: key,
-              ...values[key],
-            });
-          }
-          if (isSubcribed) {
-            setData(result);
-          }
-          setIsLoading(false);
-        } else {
-          console.log("No data available");
-          setIsLoading(false);
-        }
+    let mounted = true;
+    setIsLoading(true)
+    try {
+      fetch(URL, {
+        headers: {
+          "X-Parse-Application-Id": "myAppId",
+          "Content-Type": "application/json",
+        },
+        method: "GET",
       })
-      .catch((error) => {
-        setErrors(error);
-        setIsLoading(false);
-      });
-    return () => (isSubcribed = false);
+        .then((data) => data.json())
+        .then((data) => {
+          const { results } = data;
+          setData(results);
+        });
+    } catch (error) {
+      setErrors(error.message);
+      setIsLoading(false)
+
+    }
+    setIsLoading(false)
+    return () => {
+      mounted = false;
+    };
   }, [nameService]);
 
-  return [data, isLoading, errors, setData];
+  return [data, isLoading, errors];
 };
 
 export default useFetch;
