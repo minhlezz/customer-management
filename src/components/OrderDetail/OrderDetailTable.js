@@ -3,8 +3,8 @@ import { EditableProTable } from "@ant-design/pro-table";
 import { Empty } from "antd";
 import ExpandableTable from "./ExpandableTable";
 
-const OrderDetailTable = ({ orderProducts, products , onChange}) => {
-  const originData = orderProducts.map((prod, index) => {
+const OrderDetailTable = ({ orderProducts, products, onChange }) => {
+  const originData = orderProducts?.map((prod, index) => {
     return {
       ...prod,
       id: (Math.random() * 100000).toFixed(2),
@@ -13,7 +13,7 @@ const OrderDetailTable = ({ orderProducts, products , onChange}) => {
   });
 
   const [editableKeys, setEditableRowKeys] = useState(() =>
-    originData.map((item) => item.id)
+    originData?.map((item) => item.id)
   );
   const [dataSource, setDataSource] = useState(() => originData);
 
@@ -173,15 +173,13 @@ const OrderDetailTable = ({ orderProducts, products , onChange}) => {
               },
             ];
           }, []);
-          onChange(result)
+          onChange(result);
           setDataSource(result);
         },
         onChange: setEditableRowKeys,
       }}
       expandable={{
-        expandedRowRender: (record) => (
-          <ExpandableTable record={record} />
-        ),
+        expandedRowRender: (record) => <ExpandableTable record={record} />,
       }}
     />
   );

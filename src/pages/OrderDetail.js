@@ -1,46 +1,22 @@
 import React from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { Button, Form, Spin } from "antd";
+import { Button, Result, Spin } from "antd";
 import Title from "antd/lib/typography/Title";
 
 import { toFormatDate } from "../utils/utils";
-import * as orderDetailService from "../firebase/firebase.service";
-import useFetchByID from "../hooks/useFetchByID";
-import useFetch from "../hooks/useFetch";
+import useFetchDataByID from "../hooks/useFetchDataById";
+import useFetchData from "../hooks/useFetchData";
 import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import ProForm from "@ant-design/pro-form";
+import { updateDataById } from "../restService/restService";
 
 const OrderDetail = () => {
   const params = useParams();
   const id = params.orderId;
-  const [form] = Form.useForm();
   const history = useHistory();
 
-  const [order, loading, error, setOrder] = useFetchByID("orders", { id });
-  const [products, productLoading, productErros] = useFetch("products");
-
-  if (loading || productLoading) return <Spin />;
-  if (error || productErros) return <p>{error || productErros}</p>;
-
-  const { createdAt } = order;
-
-  const updateProductHandler = (newValues) => {
-    const newProducts = newValues.map(
-      ({ productName, productPrice, productQuantity, uniqueId }) => {
-        return {
-          productName,
-          productPrice,
-          productQuantity,
-          uniqueId,
-        };
-      }
-    );
-    const updatedData = {
-      ...order,
-      products: newProducts,
-    };
-    setOrder(updatedData);
-  };
+  const [order, isLoading, error] = useFetchDataByID("orders", { id });
+  const [products, productLoading, productErros] = useFetchData("products");
 
   const onFinish = (values) => {
     const accessories = { ...values }.orderDetail.reduce((acc, curr) => {
@@ -73,33 +49,25 @@ const OrderDetail = () => {
       return arr;
     };
 
-    const result = removeUndefinedFields(accessories);
-    console.log(result);
-
-    const options = {
-      id,
-      service: "orders",
-      value: {
-        customerId: order.customerId,
-        createdAt: order.createdAt,
-        products: result,
-      },
+    const orderList = removeUndefinedFields(accessories);
+    const result = {
+      customerId: order.customerId,
+      products: orderList,
+      createdAt: order.createdAt,
     };
 
-    orderDetailService
-      .updateById(options)
-      .then(() => {
-        console.log("success");
-      })
-      .catch((err) => console.error(err));
+    updateDataById("orders", { id, bodyData: result });
     history.goBack();
   };
+
+  if (isLoading || productLoading) return <Spin />;
+  if (productErros || error) return <p>{productErros || error} </p>;
 
   return (
     <div className="margin-25">
       <ProForm onFinish={(values) => onFinish(values)}>
         <Title level={4} type="secondary" style={{ marginBottom: "30px" }}>
-          OrderDetail - {toFormatDate(createdAt)}
+          OrderDetail - {toFormatDate(order?.createdAt)}
         </Title>
 
         <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
@@ -110,9 +78,7 @@ const OrderDetail = () => {
         <ProForm.Item name="orderDetail">
           <OrderDetailTable
             orderProducts={order.products}
-            form={form}
             products={products}
-            updateProductHandler={updateProductHandler}
           />
         </ProForm.Item>
       </ProForm>

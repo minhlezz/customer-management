@@ -3,14 +3,9 @@ import { EditableProTable } from "@ant-design/pro-table";
 import { Empty } from "antd";
 import Expandable from "./Expandable";
 
-
 const OrderProtable = ({
   onChange,
   products,
-  children,
-  orderProducts,
-  updateOrderProducts,
-  form,
 }) => {
   const [dataSource, setDataSource] = useState([]);
   const [editableKeys, setEditableRowKeys] = useState(() =>
@@ -162,7 +157,6 @@ const OrderProtable = ({
               const item = newData[itemIndex];
               newData.splice(itemIndex, 1, { ...item, ...updatedData });
             }
-            console.log(newData);
             const result = newData.reduce((acc, curr) => {
               return [
                 ...acc,
@@ -172,7 +166,7 @@ const OrderProtable = ({
                     curr.productQuantity * curr.productPrice +
                     (curr.accessory
                       ? curr.accessory.reduce((acc, curr) => {
-                          return acc + curr.totalPrice;
+                          return acc + curr.price * curr.quantity;
                         }, 0)
                       : 0),
                 },

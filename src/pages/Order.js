@@ -1,13 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Button, Form, Spin, Tabs } from "antd";
-
-import useFetch from "../hooks/useFetch";
 import OrderCustomer from "../components/Order/OrderCustomer";
-// import OrderTable from "../components/Order/OrderTable";
-import * as orderService from "../firebase/firebase.service";
 import { useHistory } from "react-router-dom";
 import OrderProtable from "../components/Order/OrderProtable";
 import ProForm from "@ant-design/pro-form";
+import useFetchData from "../hooks/useFetchData";
+import { postAPI } from "../restService/restService";
 
 const { TabPane } = Tabs;
 
@@ -15,18 +13,15 @@ const initOrder = {
   customer: {},
   products: [],
 };
+
 const Order = () => {
   const history = useHistory();
   const [order, setOrder] = useState(initOrder);
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [form] = Form.useForm();
 
-  const [customers, customerLoading, customerErrors] = useFetch("customers");
-  const [products, productLoading, productErros] = useFetch("products");
-
-  if (customerLoading || productLoading) return <Spin />;
-  if (customerErrors || productErros)
-    return <p>{customerErrors || productErros}</p>;
+  const [products, productLoading, productErros] = useFetchData("products");
+  const [customers, customerLoading, customerError] = useFetchData("customers");
 
   const selectChangeHandler = (value) => {
     let result = {};
@@ -48,8 +43,6 @@ const Order = () => {
     });
   };
   const onFinish = (values) => {
-    console.log("run");
-
     const newAccessory = { ...values }.orderList.map((item) => {
       return {
         ...item,
@@ -80,13 +73,13 @@ const Order = () => {
       products: removeUndefinedKey(newAccessory),
     };
 
-    orderService.create("orders", newOrder).catch((err) => {
-      console.log(err);
+    postAPI("orders", newOrder).catch((err) => {
+      throw new Error("cannot send data to firebase server");
     });
-
     history.push("/customer");
   };
 
+  if (customerLoading) return <Spin />;
   return (
     <div className="margin-25">
       <ProForm
