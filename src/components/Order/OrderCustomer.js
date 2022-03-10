@@ -4,10 +4,11 @@ import { Descriptions, Select } from "antd";
 const { Option } = Select;
 
 const OrderCustomer = (props) => {
-  const { customer, customers, selectedCustomer } = props;
+  const { customer, customers, selectedCustomer, ...rest } = props;
 
   const onValueChange = (value) => {
     props.selectChangeHandler(value);
+    props.onChange(value);
   };
 
   const onSearch = (value) => {
@@ -37,8 +38,9 @@ const OrderCustomer = (props) => {
         optionFilterProp="children"
         filterOption={(input, option) =>
           option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }>
-          {customerLists}
+        }
+      >
+        {customerLists}
       </Select>
 
       {selectedCustomer && (

@@ -7,6 +7,7 @@ import OrderCustomer from "../components/Order/OrderCustomer";
 import * as orderService from "../firebase/firebase.service";
 import { useHistory } from "react-router-dom";
 import OrderProtable from "../components/Order/OrderProtable";
+import ProForm from "@ant-design/pro-form";
 
 const { TabPane } = Tabs;
 
@@ -39,33 +40,6 @@ const Order = () => {
       products: [],
     });
   };
-  console.log(order);
-
-  const checkOutHandler = async () => {
-    if (form) {
-      await form.validateFields();
-      const newProducts = order.products.map(
-        ({ uniqueId, productName, productPrice, productQuantity }) => {
-          return {
-            uniqueId,
-            productName,
-            productPrice,
-            productQuantity,
-          };
-        }
-      );
-
-      const newOrder = {
-        customerId: order.customer.uniqueId,
-        products: newProducts,
-      };
-      console.log(form.getFieldsValue());
-      // orderService.create("orders", newOrder).catch((err) => {
-      //   console.log(err);
-      // });
-      // history.push("/customer");
-    }
-  };
 
   const updateOrderProducts = (values) => {
     setOrder({
@@ -73,33 +47,90 @@ const Order = () => {
       products: values,
     });
   };
+  const onFinish = (values) => {
+    console.log("run");
+
+    const newAccessory = { ...values }.orderList.map((item) => {
+      return {
+        ...item,
+        accessory: item.accessory?.map(({ price, quantity, accessory }) => {
+          return {
+            price,
+            quantity,
+            accessory,
+          };
+        }),
+      };
+    });
+
+    const removeUndefinedKey = (arr) => {
+      const temp = [...arr];
+      for (let item of temp) {
+        Object.keys(item).forEach((key) => {
+          if (item[key] === undefined) {
+            delete item[key];
+          }
+        });
+      }
+      return temp;
+    };
+
+    const newOrder = {
+      customerId: values.customerId,
+      products: removeUndefinedKey(newAccessory),
+    };
+
+    orderService.create("orders", newOrder).catch((err) => {
+      console.log(err);
+    });
+
+    history.push("/customer");
+  };
 
   return (
     <div className="margin-25">
-      <Tabs defaultActiveKey="1">
-        <TabPane tab="Order" key="1">
-          <OrderCustomer
-            customers={customers}
-            customer={order.customer}
-            selectedCustomer={selectedCustomer}
-            selectChangeHandler={selectChangeHandler}
-          />
-        </TabPane>
-        <TabPane tab="Order List" key="2" disabled={!selectedCustomer}>
-          <OrderProtable
-            products={products}
-            orderProducts={order.products}
-            updateOrderProducts={updateOrderProducts}
-            form={form}
-          >
-            <div className="dflex justify-end margin-bottom-8">
-              <Button danger type="primary" onClick={checkOutHandler}>
-                Checkout
-              </Button>
-            </div>
-          </OrderProtable>
-        </TabPane>
-      </Tabs>
+      <ProForm
+        form={form}
+        submitter={{
+          submitButtonProps: {
+            style: { display: "none" },
+          },
+          resetButtonProps: {
+            style: { display: "none" },
+          },
+        }}
+        onFinish={(values) => {
+          onFinish(values);
+        }}
+      >
+        <div className="dflex justify-end">
+          <Button danger type="primary" htmlType="submit">
+            Checkout
+          </Button>
+        </div>
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Order" key="1">
+            <ProForm.Item name={"customerId"}>
+              <OrderCustomer
+                customers={customers}
+                customer={order.customer}
+                selectedCustomer={selectedCustomer}
+                selectChangeHandler={selectChangeHandler}
+              />
+            </ProForm.Item>
+          </TabPane>
+          <TabPane tab="Order List" key="2" disabled={!selectedCustomer}>
+            <ProForm.Item name="orderList">
+              <OrderProtable
+                products={products}
+                orderProducts={order.products}
+                updateOrderProducts={updateOrderProducts}
+                form={form}
+              />
+            </ProForm.Item>
+          </TabPane>
+        </Tabs>
+      </ProForm>
     </div>
   );
 };

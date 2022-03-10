@@ -3,11 +3,9 @@ import { EditableProTable } from "@ant-design/pro-table";
 import { Empty } from "antd";
 import Expandable from "./Expandable";
 
-const expandedRowRender = (record) => {
-  return <Expandable rowData={record} />;
-};
 
 const OrderProtable = ({
+  onChange,
   products,
   children,
   orderProducts,
@@ -23,7 +21,6 @@ const OrderProtable = ({
     const selectedProduct = products.find((prod) => prod.productName === value);
     return selectedProduct;
   };
-  console.log(dataSource);
 
   const columns = [
     {
@@ -116,12 +113,10 @@ const OrderProtable = ({
 
   return (
     <>
-      {children}
       <EditableProTable
         rowKey="id"
         columns={columns}
         value={dataSource}
-        // onChange={setDataSource}
         controlled
         locale={{
           emptyText: (
@@ -175,12 +170,15 @@ const OrderProtable = ({
                   ...curr,
                   totalPrice:
                     curr.productQuantity * curr.productPrice +
-                    curr.accessory.reduce((acc, curr) => {
-                      return acc + curr.totalPrice;
-                    }, 0),
+                    (curr.accessory
+                      ? curr.accessory.reduce((acc, curr) => {
+                          return acc + curr.totalPrice;
+                        }, 0)
+                      : 0),
                 },
               ];
             }, []);
+            onChange(result);
             setDataSource(result);
           },
         }}

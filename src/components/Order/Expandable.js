@@ -3,7 +3,7 @@ import { Form } from "antd";
 import React from "react";
 import Accessories from "./Accessories";
 
-const Expandable = ({ record, dataSource }) => {
+const Expandable = ({ record }) => {
   return (
     <div>
       <ProFormDigit
@@ -15,7 +15,7 @@ const Expandable = ({ record, dataSource }) => {
         }}
       />
       <Form.Item name={[record.id, "accessory"]}>
-        <Accessories recordParent={record} dataSource={dataSource} />
+        <Accessories recordParent={record} />
       </Form.Item>
     </div>
   );
