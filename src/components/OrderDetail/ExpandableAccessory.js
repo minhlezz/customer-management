@@ -20,6 +20,9 @@ const ExpandableAccessory = ({ value, onChange, originData }) => {
       dataIndex: "accessory",
       valueType: "select",
       width: "25%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -48,11 +51,14 @@ const ExpandableAccessory = ({ value, onChange, originData }) => {
       dataIndex: "price",
       valueType: "digit",
       width: "15%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
             required: true,
-            message: "此项为必填项",
+            message: "missing price",
           },
         ],
       },
@@ -63,6 +69,9 @@ const ExpandableAccessory = ({ value, onChange, originData }) => {
       dataIndex: "quantity",
       valueType: "digit",
       width: "10%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -76,6 +85,9 @@ const ExpandableAccessory = ({ value, onChange, originData }) => {
       title: "Total Price",
       dataIndex: "totalPrice",
       width: "15%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {

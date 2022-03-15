@@ -4,11 +4,11 @@ import { Empty } from "antd";
 import ExpandableTable from "./ExpandableTable";
 
 const OrderDetailTable = ({ orderProducts, products, onChange }) => {
-  const originData = orderProducts?.map((prod, index) => {
+  const originData = orderProducts.map((prod) => {
     return {
       ...prod,
       id: (Math.random() * 100000).toFixed(2),
-      productId: prod.uniqueId,
+      productId: prod.objectId,
     };
   });
 
@@ -16,12 +16,14 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
     originData?.map((item) => item.id)
   );
   const [dataSource, setDataSource] = useState(() => originData);
-
   const columns = [
     {
       title: "Product ID",
       readonly: true,
-      dataIndex: "productId",
+      dataIndex: "objectId",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -35,6 +37,9 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       title: "Product",
       dataIndex: "productName",
       valueType: "select",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -56,6 +61,9 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       title: "Price",
       dataIndex: "productPrice",
       valueType: "digit",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -69,6 +77,9 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       title: "Quantity",
       dataIndex: "productQuantity",
       valueType: "digit",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -76,12 +87,16 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
             message: "Please input Quantity",
           },
         ],
+        placeholder: "",
       },
     },
     {
       title: "Total Price",
       dataIndex: "totalPrice",
       valueType: "digit",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -101,6 +116,8 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       },
     },
   ];
+
+  console.log(dataSource);
 
   return (
     <EditableProTable
@@ -135,7 +152,7 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
           const rowId = record?.id;
           const prevData = [...dataSource];
           const newData = [...recordList];
-          console.log(recordList);
+          console.log(prevData);
           const selectedProduct = products.find(
             (prod) => prod.productName === changedData?.productName
           );

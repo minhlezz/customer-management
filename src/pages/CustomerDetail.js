@@ -14,13 +14,11 @@ const CustomerDetail = () => {
 
   const id = params.customerId;
 
-  const [orders, orderLoading] = useFetch("orders");
+  const [orders, orderLoading] = useFetch("Orders");
 
   const [customer, loading, error] = useFetchByID("Customers", {
     id,
   });
-  
-  console.log(customer);
 
   const backToPreviousPage = () => {
     history.push("/customer");

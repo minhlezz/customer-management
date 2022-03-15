@@ -1,4 +1,4 @@
-const domain = "http://localhost:1337/classes";
+const domain = "http://localhost:1337/parse/classes";
 const URL = (nameService) => {
   return `${domain}/${nameService}`;
 };
@@ -42,7 +42,6 @@ const updateDataById = (nameService, { id, bodyData }) => {
 };
 
 const fetchAPI = (nameService, bodyData, { method }) => {
-  console.log(method);
   const url = URL(nameService);
   const options =
     method === "GET"

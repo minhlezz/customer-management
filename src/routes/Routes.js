@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 
 import Customer from "../pages/Customer";
 import NewCustomer from "../pages/NewCustomer";
@@ -9,90 +9,28 @@ import OrderDetail from "../pages/OrderDetail";
 import Product from "../pages/Product";
 import ProductDetail from "../pages/ProductDetail";
 
-import NotFound from "../pages/NotFound";
-import RedirectRoute from "./RedirectRoute";
-import Test from "../pages/Test";
-
-const mainRoutes = [
-  {
-    path: "/",
-    name: "default",
-    redirect: true,
-    exact: true,
-  },
-  {
-    path: "/customer",
-    name: "customer",
-    component: Customer,
-    exact: true,
-    redirect: false,
-  },
-  {
-    path: "/newCustomer",
-    name: "newCustomer",
-    component: NewCustomer,
-    exact: true,
-    redirect: false,
-  },
-  {
-    path: "/customer/:customerId",
-    name: "customerDetail",
-    component: CustomerDetail,
-    redirect: false,
-  },
-  {
-    path: "/order",
-    name: "order",
-    component: Order,
-    exact: true,
-    redirect: false,
-  },
-  {
-    path: "/order/:orderId",
-    name: "orderDetail",
-    component: OrderDetail,
-    redirect: false,
-  },
-  {
-    path: "/product",
-    name: "product",
-    component: Product,
-    exact: true,
-    redirect: false,
-  },
-  {
-    path: "/product/:productId",
-    name: "productDetail",
-    component: ProductDetail,
-    redirect: false,
-  },
-
-  {
-    path: "/test",
-    name: "test",
-    component: Test,
-    exact: true,
-    redirect: false,
-  },
-
-  {
-    path: "*",
-    name: "default",
-    component: NotFound,
-    redirect: false,
-  },
-];
+// import NotFound from "../pages/NotFound";
+import { useKeycloak } from "@react-keycloak/web";
+import PrivateRoute from "./PrivateRoute";
+import Login from "../pages/Login";
 
 const Router = () => {
+  const { initialized } = useKeycloak();
+
+  if (!initialized) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Switch>
-      {mainRoutes.map((route) =>
-        route.redirect ? (
-          <RedirectRoute {...route} key={route.name} />
-        ) : (
-          <Route {...route} key={route.name} />
-        )
-      )}
+      <Route path="/customer" component={Customer} exact />
+      <Route path="/login" component={Login} exact />
+      <Route path="/newCustomer" component={NewCustomer} exact />
+      <Route path="/customer/:customerId" component={CustomerDetail} />
+      <PrivateRoute path="/order" name="order" component={Order} exact />
+      <Route path="/order/:orderId" component={OrderDetail} />
+      <Route path="/product" name="product" component={Product} exact />
+      <Route path="/product/:productId" component={ProductDetail} exact />
     </Switch>
   );
 };

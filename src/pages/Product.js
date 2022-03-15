@@ -3,26 +3,33 @@ import { Form, Spin, Tabs } from "antd";
 
 import ProductForm from "../components/Product/ProductForm";
 import ProductList from "../components/Product/ProductList";
-import * as productService from "../firebase/firebase.service";
 import useFetch from "../hooks/useFetch";
+import { fetchAPI } from "../restService/restService";
 
 const { TabPane } = Tabs;
 const Product = () => {
   const [form] = Form.useForm();
 
-  const [products, loading, error, setProducts] = useFetch("products");
+  const [products, loading, error, setProducts] = useFetch("Products");
 
   const updateProductHandler = (values) => {
-    setProducts(values);
+    setProducts([...products, values]);
   };
 
   const addProductHandler = async () => {
     await form.validateFields();
     const formValues = form.getFieldsValue();
     form.resetFields();
-    const newProduct = [...products, formValues];
-    await productService.create("products", formValues);
-    updateProductHandler(newProduct);
+    const newProduct = { ...formValues };
+    console.log(newProduct);
+    try {
+      await fetchAPI("Products", newProduct, {
+        method: "POST",
+      });
+      updateProductHandler(newProduct);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (loading) return <Spin />;
@@ -30,8 +37,8 @@ const Product = () => {
 
   return (
     <div className="margin-25">
-      <Tabs defaultActiveKey="1" tabPosition="left" style={{ minHeight: 220 }} >
-        <TabPane tab="Product List" key="1" >
+      <Tabs defaultActiveKey="1" tabPosition="left" style={{ minHeight: 220 }}>
+        <TabPane tab="Product List" key="1">
           <ProductList products={products} />
         </TabPane>
         <TabPane tab="Add Product" key="2">

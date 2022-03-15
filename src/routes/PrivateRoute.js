@@ -1,11 +1,27 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
+import { useKeycloak } from "@react-keycloak/web";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
+  const { keycloak } = useKeycloak();
   return (
-    <Route {...rest}>
-      <Redirect to={{ pathname: "/customer" }} />
-    </Route>
+    <Route
+      {...rest}
+      render={(props) => {
+        return keycloak.authenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: {
+                from: props.location
+              }
+            }}
+          />
+        );
+      }}
+    />
   );
 };
 

@@ -19,6 +19,7 @@ const OrderTable = (props) => {
             message: "Please Select Product",
           },
         ],
+        placeholder: "Missing",
       },
       renderFormInput: (form, recordKey, updateOtherValues) => {
         return (
@@ -43,6 +44,7 @@ const OrderTable = (props) => {
             message: "Please Select Price",
           },
         ],
+        placeholder: "Missing",
       },
     },
     {
@@ -58,6 +60,7 @@ const OrderTable = (props) => {
             message: "Please Select Quantity",
           },
         ],
+        placeholder: "Missing",
       },
     },
     {
@@ -67,6 +70,7 @@ const OrderTable = (props) => {
       editable: true,
       inputProps: { disabled: true },
       formItemProps: {
+        placeholder: "Missing",
         rules: [
           {
             required: true,

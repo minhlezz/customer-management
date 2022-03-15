@@ -3,9 +3,9 @@ import { Button, Form, Spin, Tabs } from "antd";
 import OrderCustomer from "../components/Order/OrderCustomer";
 import { useHistory } from "react-router-dom";
 import OrderProtable from "../components/Order/OrderProtable";
-import ProForm from "@ant-design/pro-form";
-import useFetchData from "../hooks/useFetchData";
-import { postAPI } from "../restService/restService";
+import ProForm, { ProFormDatePicker } from "@ant-design/pro-form";
+import useFetch from "../hooks/useFetch";
+import { fetchAPI } from "../restService/restService";
 
 const { TabPane } = Tabs;
 
@@ -20,12 +20,14 @@ const Order = () => {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [form] = Form.useForm();
 
-  const [products, productLoading, productErros] = useFetchData("products");
-  const [customers, customerLoading, customerError] = useFetchData("customers");
+  const [products, productLoading] = useFetch("Products");
+  const [customers, customerLoading] = useFetch("Customers");
+
+  console.log(products);
 
   const selectChangeHandler = (value) => {
     let result = {};
-    const filterCustomer = customers.filter((item) => item.uniqueId === value);
+    const filterCustomer = customers.filter((item) => item.objectId === value);
     if (filterCustomer.length && filterCustomer.length < 2) {
       result = filterCustomer[0];
     }
@@ -33,13 +35,6 @@ const Order = () => {
     setOrder({
       customer: result,
       products: [],
-    });
-  };
-
-  const updateOrderProducts = (values) => {
-    setOrder({
-      ...order,
-      products: values,
     });
   };
   const onFinish = (values) => {
@@ -70,16 +65,20 @@ const Order = () => {
 
     const newOrder = {
       customerId: values.customerId,
+      deliveryDate: values.deliveryDate,
       products: removeUndefinedKey(newAccessory),
     };
+    console.log(newOrder);
+    fetchAPI("Orders", newOrder, {
+      method: "POST",
+    })
+      .then((data) => console.log(data))
+      .catch((err) => console.log(err.message));
 
-    postAPI("orders", newOrder).catch((err) => {
-      throw new Error("cannot send data to firebase server");
-    });
     history.push("/customer");
   };
 
-  if (customerLoading) return <Spin />;
+  if (customerLoading || productLoading) return <Spin />;
   return (
     <div className="margin-25">
       <ProForm
@@ -113,12 +112,13 @@ const Order = () => {
             </ProForm.Item>
           </TabPane>
           <TabPane tab="Order List" key="2" disabled={!selectedCustomer}>
+            <ProForm.Item name="deliveryDate" label="Delivery date">
+              <ProFormDatePicker placeholder={"dd/mm/yy"} />
+            </ProForm.Item>
             <ProForm.Item name="orderList">
               <OrderProtable
                 products={products}
                 orderProducts={order.products}
-                updateOrderProducts={updateOrderProducts}
-                form={form}
               />
             </ProForm.Item>
           </TabPane>

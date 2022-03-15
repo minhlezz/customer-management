@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const domain = "http://localhost:1337/classes";
+const domain = "http://localhost:1337/parse/classes";
 
 const useFetch = (nameService) => {
   const [data, setData] = useState([]);
@@ -34,7 +34,7 @@ const useFetch = (nameService) => {
     };
   }, [nameService]);
 
-  return [data, isLoading, errors];
+  return [data, isLoading, errors, setData];
 };
 
 export default useFetch;

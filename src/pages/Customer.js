@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button, Spin, Table } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
@@ -39,6 +39,8 @@ const Customer = () => {
   if (loading) return <Spin />;
 
   if (errors) return <p>{errors}</p>;
+
+  console.log(data);
 
   return (
     <div className="margin-25">

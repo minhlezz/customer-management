@@ -3,10 +3,7 @@ import { EditableProTable } from "@ant-design/pro-table";
 import { Empty } from "antd";
 import Expandable from "./Expandable";
 
-const OrderProtable = ({
-  onChange,
-  products,
-}) => {
+const OrderProtable = ({ onChange, products }) => {
   const [dataSource, setDataSource] = useState([]);
   const [editableKeys, setEditableRowKeys] = useState(() =>
     dataSource?.map((item) => item.id)
@@ -17,10 +14,11 @@ const OrderProtable = ({
     return selectedProduct;
   };
 
+  console.log(dataSource);
   const columns = [
     {
       title: "Product ID",
-      dataIndex: "uniqueId",
+      dataIndex: "objectId",
       readonly: true,
       width: "25%",
       formItemProps: {
@@ -30,6 +28,9 @@ const OrderProtable = ({
             message: "ProductID is required",
           },
         ],
+      },
+      fieldProps: {
+        placeholder: "",
       },
     },
     {
@@ -44,6 +45,9 @@ const OrderProtable = ({
             message: "Product Name is required",
           },
         ],
+      },
+      fieldProps: {
+        placeholder: "",
       },
       request: async () => {
         return products.map((product) => {
@@ -63,9 +67,12 @@ const OrderProtable = ({
         rules: [
           {
             required: true,
-            message: "此项为必填项",
+            message: "price is required",
           },
         ],
+      },
+      fieldProps: {
+        placeholder: "",
       },
     },
 
@@ -82,11 +89,14 @@ const OrderProtable = ({
           },
         ],
       },
+      fieldProps: {
+        placeholder: "",
+      },
     },
     {
       title: "Total Price",
       dataIndex: "totalPrice",
-      width: "10%",
+      width: "15%",
       formItemProps: {
         rules: [
           {
@@ -94,6 +104,9 @@ const OrderProtable = ({
             message: "Missing total price",
           },
         ],
+      },
+      fieldProps: {
+        placeholder: "",
       },
     },
     {

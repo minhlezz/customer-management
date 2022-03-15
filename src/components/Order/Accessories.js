@@ -1,4 +1,5 @@
 import { EditableProTable } from "@ant-design/pro-table";
+import { Empty } from "antd";
 import React from "react";
 
 const accessories = [
@@ -18,6 +19,9 @@ const Accessories = ({ value, onChange }) => {
       dataIndex: "accessory",
       valueType: "select",
       width: "25%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -46,6 +50,9 @@ const Accessories = ({ value, onChange }) => {
       dataIndex: "price",
       valueType: "digit",
       width: "15%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -61,6 +68,9 @@ const Accessories = ({ value, onChange }) => {
       dataIndex: "quantity",
       valueType: "digit",
       width: "10%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -74,6 +84,9 @@ const Accessories = ({ value, onChange }) => {
       title: "Total Price",
       dataIndex: "totalPrice",
       width: "15%",
+      fieldProps: {
+        placeholder: "",
+      },
       formItemProps: {
         rules: [
           {
@@ -101,6 +114,11 @@ const Accessories = ({ value, onChange }) => {
         bordered
         columns={columns}
         value={value}
+        locale={{
+          emptyText: (
+            <Empty description="No Data" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          ),
+        }}
         controlled
         recordCreatorProps={{
           position: "bottom",

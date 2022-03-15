@@ -11,6 +11,7 @@ const ExpandableTable = ({ record }) => {
       totalPrice: item.price + item.quantity,
     };
   });
+
   return (
     <div>
       <ProFormDigit
@@ -19,6 +20,7 @@ const ExpandableTable = ({ record }) => {
         min={0}
         fieldProps={{
           style: { maxWidth: 200 },
+          placeholder: "%"
         }}
       />
       <ProForm.Item name={[record.id, "accessory"]}>

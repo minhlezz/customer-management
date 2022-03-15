@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-const domain = "http://localhost:1337/classes";
+const domain = "http://localhost:1337/parse/classes";
 
 const useFetchByID = (nameService, { id }) => {
   const [data, setData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState();
   const URL = `${domain}/${nameService}/${id}`;
   useEffect(() => {

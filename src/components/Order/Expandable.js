@@ -12,6 +12,7 @@ const Expandable = ({ record }) => {
         min={0}
         fieldProps={{
           style: { maxWidth: 200 },
+          placeholder: "%"
         }}
       />
       <Form.Item name={[record.id, "accessory"]}>
