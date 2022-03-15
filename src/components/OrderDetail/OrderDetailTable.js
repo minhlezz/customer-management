@@ -3,7 +3,7 @@ import { EditableProTable } from "@ant-design/pro-table";
 import { Empty } from "antd";
 import ExpandableTable from "./ExpandableTable";
 
-const OrderDetailTable = ({ orderProducts, products, onChange }) => {
+const OrderDetailTable = ({ orderProducts, products, onChange, disabled }) => {
   const originData = orderProducts.map((prod) => {
     return {
       ...prod,
@@ -11,7 +11,6 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       productId: prod.objectId,
     };
   });
-
   const [editableKeys, setEditableRowKeys] = useState(() =>
     originData?.map((item) => item.id)
   );
@@ -93,6 +92,7 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
     {
       title: "Total Price",
       dataIndex: "totalPrice",
+      readonly: true,
       valueType: "digit",
       fieldProps: {
         placeholder: "",
@@ -111,13 +111,8 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       title: "Operation",
       valueType: "option",
       width: 200,
-      render: () => {
-        return null;
-      },
     },
   ];
-
-  console.log(dataSource);
 
   return (
     <EditableProTable
@@ -134,6 +129,7 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
         position: "bottom",
         newRecordType: "dataSource",
         creatorButtonText: "Add new record",
+        disabled: disabled,
         record: () => {
           return {
             id: Date.now(),
@@ -142,11 +138,19 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
       }}
       editable={{
         type: "multiple",
-        editableKeys,
-        actionRender: (row, config, defaultDoms) => {
-          return [defaultDoms.delete];
+        editableKeys: disabled ? [] : editableKeys,
+        actionRender: (row, config, dom) => {
+          return [
+            <a
+              key="delete"
+              onClick={() => {
+                setDataSource(dataSource.filter((item) => item.id !== row.id));
+              }}
+            >
+              remove
+            </a>,
+          ];
         },
-        deleteText: "Remove",
         onValuesChange: (record, recordList) => {
           const changedData = record;
           const rowId = record?.id;
@@ -196,7 +200,9 @@ const OrderDetailTable = ({ orderProducts, products, onChange }) => {
         onChange: setEditableRowKeys,
       }}
       expandable={{
-        expandedRowRender: (record) => <ExpandableTable record={record} />,
+        expandedRowRender: (record) => (
+          <ExpandableTable record={record} disabled={disabled} />
+        ),
       }}
     />
   );

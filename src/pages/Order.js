@@ -23,8 +23,6 @@ const Order = () => {
   const [products, productLoading] = useFetch("Products");
   const [customers, customerLoading] = useFetch("Customers");
 
-  console.log(products);
-
   const selectChangeHandler = (value) => {
     let result = {};
     const filterCustomer = customers.filter((item) => item.objectId === value);

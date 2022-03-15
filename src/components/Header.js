@@ -18,7 +18,7 @@ const Header = () => {
     history.push("/product");
     keycloak.logout();
   };
-
+  
   useEffect(() => {
     const path = location.pathname.substring(1, location.pathname.length);
     setCurrent(path);

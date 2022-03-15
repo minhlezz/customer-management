@@ -6,6 +6,7 @@ import { SettingOutlined } from "@ant-design/icons";
 import InfomationDetail from "./Information/InfomationDetail";
 import InformationForm from "./Information/InformationForm";
 import * as customerService from "../../firebase/firebase.service";
+import { isAuthorzied } from "../../keycloak/isAuthorzied";
 
 const CustomerInfomation = (props) => {
   const { id, customer } = props;
@@ -44,7 +45,13 @@ const CustomerInfomation = (props) => {
 
   return (
     <Fragment>
-      <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
+      <div
+        className="dflex justify-end"
+        style={{
+          marginBottom: "8px",
+          display: isAuthorzied(props.roles) ? "flex" : "none",
+        }}
+      >
         {!edit && (
           <Button
             icon={<SettingOutlined />}

@@ -15,7 +15,7 @@ import PrivateRoute from "./PrivateRoute";
 import Login from "../pages/Login";
 
 const Router = () => {
-  const { initialized } = useKeycloak();
+  const { keycloak, initialized } = useKeycloak();
 
   if (!initialized) {
     return <div>Loading...</div>;

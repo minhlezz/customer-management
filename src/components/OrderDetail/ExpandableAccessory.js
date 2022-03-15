@@ -7,7 +7,7 @@ const accessories = [
   { accessory: "scissors", price: 26.1 },
 ];
 
-const ExpandableAccessory = ({ value, onChange, originData }) => {
+const ExpandableAccessory = ({ value, onChange, originData, disabled }) => {
   console.log(originData);
   const [editableKeys, setEditableRowKeys] = useState(
     () => originData?.map((item) => item.id) || []
@@ -119,13 +119,14 @@ const ExpandableAccessory = ({ value, onChange, originData }) => {
         position: "bottom",
         creatorButtonText: "Add new record",
         newRecordType: "dataSource",
+        disabled: disabled,
         record: () => ({
           id: Date.now(),
         }),
       }}
       editable={{
         type: "multiple",
-        editableKeys,
+        editableKeys: disabled ? [] : editableKeys,
         deleteText: "delete",
         actionRender: (row, config, defaultDoms) => {
           return [defaultDoms.delete];
@@ -169,7 +170,7 @@ const ExpandableAccessory = ({ value, onChange, originData }) => {
               ...acc,
               {
                 ...curr,
-                totalPrice: curr.quantity * curr.price,
+                totalPrice: (curr.quantity * curr.price).toFixed(2),
               },
             ];
           }, []);

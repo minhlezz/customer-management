@@ -2,7 +2,7 @@ import ProForm, { ProFormDigit } from "@ant-design/pro-form";
 import React from "react";
 import ExpandableAccessory from "./ExpandableAccessory";
 
-const ExpandableTable = ({ record }) => {
+const ExpandableTable = ({ record, disabled }) => {
   const { accessory } = record ? record : [];
   const originData = accessory?.map((item) => {
     return {
@@ -18,13 +18,14 @@ const ExpandableTable = ({ record }) => {
         label="discount"
         name={[record.id, "discount"]}
         min={0}
+        disabled={disabled}
         fieldProps={{
           style: { maxWidth: 200 },
-          placeholder: "%"
+          placeholder: "%",
         }}
       />
       <ProForm.Item name={[record.id, "accessory"]}>
-        <ExpandableAccessory originData={originData} />
+        <ExpandableAccessory originData={originData} disabled={disabled} />
       </ProForm.Item>
     </div>
   );

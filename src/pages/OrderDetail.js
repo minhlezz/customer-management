@@ -9,6 +9,8 @@ import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import ProForm from "@ant-design/pro-form";
 import { updateDataById } from "../restService/restService";
 import DeliveryInfo from "../components/OrderDetail/DeliveryInfo";
+import { useKeycloak } from "@react-keycloak/web";
+import { isAuthorzied } from "../keycloak/isAuthorzied";
 
 const OrderDetail = () => {
   const params = useParams();
@@ -16,8 +18,13 @@ const OrderDetail = () => {
   const history = useHistory();
   const [order, setOrder] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  // const [order, isLoading, error] = useFetchByID("Orders", { id });
   const [products, productLoading] = useFetch("Products");
+  const {
+    keycloak: {
+      realmAccess: { roles },
+    },
+    initialized,
+  } = useKeycloak();
 
   const URL = `http://localhost:1337/parse/classes/Orders/${id}`;
   const fetchOrder = async () => {
@@ -42,6 +49,7 @@ const OrderDetail = () => {
   useEffect(() => {
     fetchOrder();
   }, []);
+  console.log(isAuthorzied(roles));
 
   const onFinish = (values) => {
     const accessories = { ...values }.orderDetail.reduce((acc, curr) => {
@@ -73,7 +81,6 @@ const OrderDetail = () => {
       }
       return arr;
     };
-
     const orderList = removeUndefinedFields(accessories);
     const result = {
       customerId: order.customerId,
@@ -84,7 +91,7 @@ const OrderDetail = () => {
     history.goBack();
   };
 
-  if (isLoading || productLoading) return <Spin />;
+  if (isLoading || productLoading || !initialized) return <Spin />;
 
   return (
     <div className="margin-25">
@@ -108,15 +115,21 @@ const OrderDetail = () => {
         </Title>
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab="Order" key="1">
-            <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
-              <Button danger type="primary" htmlType="submit">
-                Save
-              </Button>
-            </div>
+            {isAuthorzied({ roles }) && (
+              <div
+                className="dflex justify-end"
+                style={{ marginBottom: "8px" }}
+              >
+                <Button danger type="primary" htmlType="submit">
+                  Save
+                </Button>
+              </div>
+            )}
             <ProForm.Item name="orderDetail">
               <OrderDetailTable
                 orderProducts={order.products}
                 products={products}
+                disabled={!isAuthorzied({ roles })}
               />
             </ProForm.Item>
           </Tabs.TabPane>

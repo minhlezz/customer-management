@@ -62,7 +62,6 @@ const CustomerOrder = (props) => {
 
   const orderHistory = order.map((item, index) => {
     const totalAmount = totalPriceCalc(item.products)
-    console.log(item);
     return {
       key: index + 1,
       date: toFormatDate(item.createdAt),

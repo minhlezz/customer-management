@@ -52,6 +52,10 @@
   justify-content: end;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
 #form-customer-detail .ant-btn {
   margin-right: 8px;
 }
