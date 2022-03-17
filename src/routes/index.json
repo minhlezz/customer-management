@@ -1,0 +1,5 @@
+{
+  "admin": ["/customer", "/customer/:customerId", "/order", "/order/:orderId"],
+  "normal-user": ["/order"],
+  "manager": ["/customer", "/customer/:customerId", "/order", "/order/:orderId"]
+}

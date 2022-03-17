@@ -4,8 +4,6 @@ import { UserAddOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import Title from "antd/lib/typography/Title";
 import useFetch from "../hooks/useFetch";
-import { useKeycloak } from "@react-keycloak/web";
-import { isAuthorzied } from "../keycloak/isAuthorzied";
 
 const columns = [
   { title: "ID", dataIndex: "objectId", key: "objectId" },
@@ -16,15 +14,9 @@ const columns = [
   { title: "Phone N.", dataIndex: "phoneNumber", key: "phoneNumber" },
 ];
 
-const Customer = () => {
+const Customer = (props) => {
   const history = useHistory();
   const [data, loading, errors] = useFetch("Customers");
-  const {
-    keycloak: {
-      realmAccess: { roles },
-    },
-    initialized,
-  } = useKeycloak();
 
   const dataSource = data.map((item) => {
     return {
@@ -43,7 +35,7 @@ const Customer = () => {
     history.push("/newCustomer");
   };
 
-  if (loading || !initialized) return <Spin />;
+  if (loading) return <Spin />;
 
   if (errors) return <p>{errors}</p>;
 
@@ -56,7 +48,6 @@ const Customer = () => {
         className="dflex justify-end"
         style={{
           marginBottom: "8px",
-          display: isAuthorzied({ roles }) ? "flex" : "none",
         }}
       >
         <Button

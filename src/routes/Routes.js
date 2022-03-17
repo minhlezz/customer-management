@@ -1,5 +1,5 @@
 import React from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 import Customer from "../pages/Customer";
 import NewCustomer from "../pages/NewCustomer";
@@ -13,9 +13,11 @@ import ProductDetail from "../pages/ProductDetail";
 import { useKeycloak } from "@react-keycloak/web";
 import PrivateRoute from "./PrivateRoute";
 import Login from "../pages/Login";
+import Forbidden from "../pages/Forbidden";
+import roles from "./index.json";
 
 const Router = () => {
-  const { keycloak, initialized } = useKeycloak();
+  const { initialized } = useKeycloak();
 
   if (!initialized) {
     return <div>Loading...</div>;
@@ -23,14 +25,16 @@ const Router = () => {
 
   return (
     <Switch>
-      <Route path="/customer" component={Customer} exact />
+      <PrivateRoute path="/customer" component={Customer} exact />
+      <PrivateRoute path="/customer/:customerId" component={CustomerDetail} />
+      <PrivateRoute path="/order/:orderId" component={OrderDetail} />
+
       <Route path="/login" component={Login} exact />
       <Route path="/newCustomer" component={NewCustomer} exact />
-      <Route path="/customer/:customerId" component={CustomerDetail} />
-      <PrivateRoute path="/order" name="order" component={Order} exact />
-      <Route path="/order/:orderId" component={OrderDetail} />
+      <Route path="/order" name="order" component={Order} exact />
       <Route path="/product" name="product" component={Product} exact />
       <Route path="/product/:productId" component={ProductDetail} exact />
+      <Route path="/forbidden" component={Forbidden} exact />
     </Switch>
   );
 };

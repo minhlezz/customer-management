@@ -20,6 +20,8 @@ const Login = () => {
     action = login();
   }
 
+ 
+
   if (keycloak?.authenticated) {
     prevPath = localStorage.getItem("prevPath");
   }

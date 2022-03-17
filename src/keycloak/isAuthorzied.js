@@ -1,4 +1,3 @@
-export const isAuthorzied = ({ roles = [] }) => {
-  const isAdmin = roles.includes("admin");
-  return isAdmin;
+export const canEdit = ({ roles }) => {
+    
 };

@@ -9,22 +9,15 @@ import OrderDetailTable from "../components/OrderDetail/OrderDetailTable";
 import ProForm from "@ant-design/pro-form";
 import { updateDataById } from "../restService/restService";
 import DeliveryInfo from "../components/OrderDetail/DeliveryInfo";
-import { useKeycloak } from "@react-keycloak/web";
-import { isAuthorzied } from "../keycloak/isAuthorzied";
 
-const OrderDetail = () => {
+const OrderDetail = (props) => {
   const params = useParams();
   const id = params.orderId;
   const history = useHistory();
   const [order, setOrder] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [products, productLoading] = useFetch("Products");
-  const {
-    keycloak: {
-      realmAccess: { roles },
-    },
-    initialized,
-  } = useKeycloak();
+  const { currentRole } = props;
 
   const URL = `http://localhost:1337/parse/classes/Orders/${id}`;
   const fetchOrder = async () => {
@@ -49,7 +42,6 @@ const OrderDetail = () => {
   useEffect(() => {
     fetchOrder();
   }, []);
-  console.log(isAuthorzied(roles));
 
   const onFinish = (values) => {
     const accessories = { ...values }.orderDetail.reduce((acc, curr) => {
@@ -91,7 +83,12 @@ const OrderDetail = () => {
     history.goBack();
   };
 
-  if (isLoading || productLoading || !initialized) return <Spin />;
+  const canEdit = (role) => {
+    const roles = ["admin"];
+    return roles.includes(role);
+  };
+
+  if (isLoading || productLoading) return <Spin />;
 
   return (
     <div className="margin-25">
@@ -115,21 +112,17 @@ const OrderDetail = () => {
         </Title>
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab="Order" key="1">
-            {isAuthorzied({ roles }) && (
-              <div
-                className="dflex justify-end"
-                style={{ marginBottom: "8px" }}
-              >
-                <Button danger type="primary" htmlType="submit">
-                  Save
-                </Button>
-              </div>
-            )}
+            <div className="dflex justify-end" style={{ marginBottom: "8px" }}>
+              <Button danger type="primary" htmlType="submit">
+                Save
+              </Button>
+            </div>
+
             <ProForm.Item name="orderDetail">
               <OrderDetailTable
                 orderProducts={order.products}
                 products={products}
-                disabled={!isAuthorzied({ roles })}
+                disabled={!!canEdit(currentRole)}
               />
             </ProForm.Item>
           </Tabs.TabPane>

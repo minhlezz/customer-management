@@ -14,7 +14,7 @@ const initOrder = {
   products: [],
 };
 
-const Order = () => {
+const Order = (props) => {
   const history = useHistory();
   const [order, setOrder] = useState(initOrder);
   const [selectedCustomer, setSelectedCustomer] = useState("");
@@ -35,6 +35,7 @@ const Order = () => {
       products: [],
     });
   };
+
   const onFinish = (values) => {
     const newAccessory = { ...values }.orderList.map((item) => {
       return {
@@ -66,7 +67,6 @@ const Order = () => {
       deliveryDate: values.deliveryDate,
       products: removeUndefinedKey(newAccessory),
     };
-    console.log(newOrder);
     fetchAPI("Orders", newOrder, {
       method: "POST",
     })
@@ -77,6 +77,7 @@ const Order = () => {
   };
 
   if (customerLoading || productLoading) return <Spin />;
+
   return (
     <div className="margin-25">
       <ProForm

@@ -14,7 +14,6 @@ const OrderProtable = ({ onChange, products }) => {
     return selectedProduct;
   };
 
-  console.log(dataSource);
   const columns = [
     {
       title: "Product ID",

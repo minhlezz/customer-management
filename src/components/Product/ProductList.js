@@ -17,7 +17,7 @@ const ExtraOptions = ({ record }) => {
 };
 
 const ProductList = ({ products }) => {
-  const dataSource = products.map((prod, index) => {
+  const dataSource = products?.map((prod, index) => {
     return {
       ...prod,
       key: index + 1,

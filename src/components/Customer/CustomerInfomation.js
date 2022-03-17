@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Button } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
@@ -6,7 +6,6 @@ import { SettingOutlined } from "@ant-design/icons";
 import InfomationDetail from "./Information/InfomationDetail";
 import InformationForm from "./Information/InformationForm";
 import * as customerService from "../../firebase/firebase.service";
-import { isAuthorzied } from "../../keycloak/isAuthorzied";
 
 const CustomerInfomation = (props) => {
   const { id, customer } = props;
@@ -49,7 +48,6 @@ const CustomerInfomation = (props) => {
         className="dflex justify-end"
         style={{
           marginBottom: "8px",
-          display: isAuthorzied(props.roles) ? "flex" : "none",
         }}
       >
         {!edit && (
