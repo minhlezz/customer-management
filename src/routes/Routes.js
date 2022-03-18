@@ -15,6 +15,7 @@ import PrivateRoute from "./PrivateRoute";
 import Login from "../pages/Login";
 import Forbidden from "../pages/Forbidden";
 import roles from "./index.json";
+import Test from "../pages/Test";
 
 const Router = () => {
   const { initialized } = useKeycloak();
@@ -35,6 +36,7 @@ const Router = () => {
       <Route path="/product" name="product" component={Product} exact />
       <Route path="/product/:productId" component={ProductDetail} exact />
       <Route path="/forbidden" component={Forbidden} exact />
+      <Route path="/test" component={Test} exact />
     </Switch>
   );
 };

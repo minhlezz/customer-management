@@ -11,7 +11,7 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
     const userHasRoutes = sourceRoles[currentRole];
     return userHasRoutes.includes(path);
   };
-
+  console.log(keycloak);
   return (
     <Route
       {...rest}
