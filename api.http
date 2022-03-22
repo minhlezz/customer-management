@@ -2,26 +2,29 @@ get http://localhost:1337/classes/Orders
 X-Parse-Application-Id: myAppId
 Content-Type: application/json
 ###
-get http://localhost:1337/parse/classes/Products
-X-Parse-Application-Id: myAppId
-Content-Type: application/json
-X-Parse-Session-Token: r:d67a1dd763df8cc299c966e8b4f396fe
-###
-post http://localhost:1337/classes/Customers
+get http://localhost:1337/parse/classes/Products/Fv0oysJFEU
 X-Parse-Application-Id: myAppId
 Content-Type: application/json
 
+
+###
+POST  http://localhost:1337/parse/classes/Products
+X-Parse-Application-Id: myAppId
+Content-Type: application/json
+X-Parse-Session-Token: r:c8ff94e1378866246d8ab4df54632a07
 {
-    "message": "OK",
-    "scrore": 123
+  
 }
 
 ###
-PUT http://localhost:1337/classes/Customers/95VXFXFNa8
+PUT http://localhost:1337/parse/classes/Products/Fv0oysJFEU
 X-Parse-Application-Id: myAppId
 Content-Type: application/json
+X-Parse-REST-API-Key: restAPI
+X-Parse-Session-Token: r:4be9dfb81edc447b76a6480e8c367402
+
 {
-    "phoneNumber": 23133219944
+   "productPrice": 123123
 }
 
 ###
@@ -71,10 +74,10 @@ Content-Type: application/json
 {
   "authData": {
     "keycloak": {
-      "id": "cecca824-f517-441c-99fd-f678110903c4",
-      "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlZHJFZXRIRmxpbnNSeFBCNDRuX3RzMVZtOG9JRlJoNXhnNE9IanVvSGJzIn0.eyJleHAiOjE2NDc1Njk1OTQsImlhdCI6MTY0NzU2OTI5NCwiYXV0aF90aW1lIjoxNjQ3NTY5MjkzLCJqdGkiOiIxZmUwMmYyNC0yNGFhLTQzZjgtOGMxMC1mZjlhZjc3OWU2MTciLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXV0aC9yZWFsbXMvY3VzdG9tZXItbWduIiwic3ViIjoiY2VjY2E4MjQtZjUxNy00NDFjLTk5ZmQtZjY3ODExMDkwM2M0IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiY3VzdG9tZXItcmVhY3QiLCJub25jZSI6IjVjNDI4YmZiLTc2OTYtNDkyNy1hNjcyLWNmMjRmZDliMmFiYyIsInNlc3Npb25fc3RhdGUiOiJmZWQ1YTg4ZS04NTQyLTQ0ZDEtOWVmMC1hZTMxY2M3ZWExN2IiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiYWRtaW4iXX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJzaWQiOiJmZWQ1YTg4ZS04NTQyLTQ0ZDEtOWVmMC1hZTMxY2M3ZWExN2IiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJNaW5oIExlIiwicHJlZmVycmVkX3VzZXJuYW1lIjoibWluaCIsImdpdmVuX25hbWUiOiJNaW5oIiwiZmFtaWx5X25hbWUiOiJMZSIsImVtYWlsIjoibWluaC5sZUBleGltaWFzLmNoIn0.aOMlc8FUGqrE8fh5Xu6xAOe9dR-medsK0lyFJoFGipMKS9ZVGVoTUJ_PFc15f5-57EAvuuKvIBC2Rz2d8fpsWYhjuNXCuriS1rWp0ScekI2PxzlQKhYL0rlB0YQBfl1atAOGY09L5Gty0KjSsYwK7WCcmvGfwA6jVhEFiRFXmfOWyTvSwinL6vg29r6VhkLVRVBsKS5Tk4b9_a-pdW6qcPT70r-muFCE06br5jtH5KHiMuygZQ6gQY235r3JuXzOBoRoLkr2NxsNbKHEgdwtV1jZGOop2hvLFlrA8sKbtiQOsv-umN6OBraFKYcxxyn_oVPW1e41H7FLU87pJ4rQJg",
+      "id": "572143f8-dab8-4d7d-80c6-cc185d7424a3",
+      "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJIV2kxUG9oTWM4Q08xLW1VcGFVM254ZkFCSi1DNWdCV0h1TW0yci1XZmg4In0.eyJleHAiOjE2NDc5MzE5NTAsImlhdCI6MTY0NzkzMTY1MCwiYXV0aF90aW1lIjoxNjQ3OTMxNjQ5LCJqdGkiOiI1NmFjMzhlZS05ODQ3LTQwZTktYjhkOC1lNTA1NWM2NDc3ODYiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXV0aC9yZWFsbXMvY3VzdG9tZXItbWFuYWdlbWVudCIsInN1YiI6IjU3MjE0M2Y4LWRhYjgtNGQ3ZC04MGM2LWNjMTg1ZDc0MjRhMyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImN1c3RvbWVyLXJlYWN0Iiwibm9uY2UiOiJlNjQ4Y2VjOS0xMzBjLTRiN2EtOGYwMi1lOTVhYmI4YzJmMDAiLCJzZXNzaW9uX3N0YXRlIjoiNTE5NTkzNDktMWE5NC00YTZmLWI1M2UtMTdkN2I4MDdmOGM3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjMwMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm5vcm1hbC11c2VyIl19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwic2lkIjoiNTE5NTkzNDktMWE5NC00YTZmLWI1M2UtMTdkN2I4MDdmOGM3IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ1c2VyIn0.fPLjMhPrypd1dybi5GPUbqXL18ssR9rRFjAY85No41YPsEwyT8FGrWHRP8rSlxONfZFnxFd6wG4eJnz7uOUAWVEWUA5RyYej_F47laQ6JDTpaR0RVWrbqpQOTxqUS6mdjE4s5wTX-UvEg0SGnnK0vldl0eU-GNsnXMN2yLJtrunB6DoN5Rm6DluQw4fyZuqnvw4nBsiOglHNQnCJNLjinCoIwyyPIPBy_iV-AJkrhwWqzywtU7rDRKohAjk8XT928uIxSo2FHoZejrvGhQpwFaxcQzw8gig9uQf9gcHF8x2d404nQW1OQjfokd3mbAxHamVaoQvndUI1ZLgTA801mA",
       "roles": [
-        "admin"
+        "Admin"
       ]
     }
   }
