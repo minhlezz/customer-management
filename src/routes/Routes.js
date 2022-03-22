@@ -14,7 +14,6 @@ import { useKeycloak } from "@react-keycloak/web";
 import PrivateRoute from "./PrivateRoute";
 import Login from "../pages/Login";
 import Forbidden from "../pages/Forbidden";
-import roles from "./index.json";
 import Test from "../pages/Test";
 
 const Router = () => {
@@ -23,7 +22,7 @@ const Router = () => {
   if (!initialized) {
     return <div>Loading...</div>;
   }
-
+ 
   return (
     <Switch>
       <PrivateRoute path="/customer" component={Customer} exact />

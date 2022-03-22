@@ -6,17 +6,19 @@ const useFetch = (nameService) => {
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState();
   const URL = `${domain}/${nameService}`;
+  const sessionId = localStorage.getItem("sessionId");
 
   useEffect(() => {
     let mounted = true;
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       fetch(URL, {
+        method: "GET",
         headers: {
           "X-Parse-Application-Id": "myAppId",
           "Content-Type": "application/json",
+          "X-Parse-Session-Token": `${sessionId}`,
         },
-        method: "GET",
       })
         .then((data) => data.json())
         .then((data) => {
@@ -25,10 +27,9 @@ const useFetch = (nameService) => {
         });
     } catch (error) {
       setErrors(error.message);
-      setIsLoading(false)
-
+      setIsLoading(false);
     }
-    setIsLoading(false)
+    setIsLoading(false);
     return () => {
       mounted = false;
     };

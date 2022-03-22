@@ -11,7 +11,46 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
     const userHasRoutes = sourceRoles[currentRole];
     return userHasRoutes.includes(path);
   };
-  console.log(keycloak);
+
+  // const verifiedAuthByParseServer = async (authData) => {
+  //   const URL = "http://localhost:1337/parse/users";
+  //   try {
+  //     const data = await fetch(URL, {
+  //       method: "POST",
+  //       headers: {
+  //         "X-Parse-Application-Id": " myAppId",
+  //         "X-Parse-REST-API-Key": " restAPI",
+  //         "X-Parse-Revocable-Session": "1",
+  //         "Content-Type": " application/json",
+  //       },
+  //       body: JSON.stringify(authData),
+  //     });
+  //     const response = await data.json();
+  //     console.log(response);
+  //     if (response && response.sessionToken) {
+  //       localStorage.setItem("sessionId", response.sessionToken);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  // if (keycloak.authenticated) {
+  //   const { tokenParsed, token, realmAccess } = keycloak;
+  //   if (tokenParsed && token && realmAccess) {
+  //     const authData = {
+  //       authData: {
+  //         keycloak: {
+  //           id: tokenParsed.sub,
+  //           access_token: token,
+  //           roles: realmAccess.roles,
+  //         },
+  //       },
+  //     };
+  //     verifiedAuthByParseServer(authData);
+  //   }
+  // }
+
   return (
     <Route
       {...rest}

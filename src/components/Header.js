@@ -15,6 +15,7 @@ const Header = () => {
     setCurrent(e.key);
   };
   const handleLogout = () => {
+    localStorage.removeItem("sessionId")
     history.push("/product");
     keycloak.logout();
   };
